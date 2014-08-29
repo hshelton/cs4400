@@ -8,6 +8,8 @@ int main ()
 	
 	printInt(3);
 	
+	int x = 34; 
+	printInt(x 
 	
 	
 	
@@ -15,6 +17,8 @@ int main ()
 	
 	
 }
+
+
 
 void printInt(int input)
 {
