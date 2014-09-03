@@ -1,17 +1,20 @@
 #include <stdio.h>
-
-
+#include "stdafx.h"
+#include <iostream>
 
 
 int main ()
 {
 	
-	printInt(3);
+	int test = 17;
+	int notX = ~test;
+	int w = sizeof(test <<3);
 	
-	int x = 34; 
-	printInt(x 
+	int operand = 0<<w;
 	
-	
+	std::cout<< std::bitset<32>(w);
+
+
 	
 	return 0;
 	

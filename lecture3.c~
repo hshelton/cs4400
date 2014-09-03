@@ -1,0 +1,25 @@
+#include <stdio.h>
+
+int main ()
+{
+	int num = 10;
+	int* ptr = &num; //int pointer ptr is pointing to the memory address of num
+	*ptr = 3; //contents of memory address of ptr is now 3
+	int * ptr1, *ptr2; //you have to declare multiple pointers this way
+	
+	float * flt_ptr;
+	
+	float dereferenced = *flt_ptr;
+	
+	
+	printf("%d \n", dereferenced);
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}
