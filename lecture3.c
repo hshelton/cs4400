@@ -22,6 +22,30 @@ int main ()
 	float *p2 = p1+2;
 	//value of p2 = 5.6
 	//p1 is less than 
+	
+	int x = 16;
+	float result = x/4.0; //x is converted to 16.0 before the division occurs
+	
+	//types only get promoted to those that support higher precision (for the most part)
+	
+	float a, b;
+	int c, d;
+	
+	b = 1.0;
+	c = -5;
+	d = 2;
+	
+	a = b * (c/d); // a is -2.0
+	a = b * ((float) c /d ); // a is -2.5
+	a = b/c * d; // a is -0.4
+	a = (int) (b/c) * d; // a is 0.0
+	//numbers are rounded down by default 
+	
+	
+	
+	
+	
+	
 	//printf("%f \n", test);
 	
 	
