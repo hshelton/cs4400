@@ -34,12 +34,78 @@ int hexToInt( char * hex)
 	return li1;
 }
 
-int main ()
+
+
+/*END OF HELPER FUNCITONS ************************** */
+ 
+
+
+
+
+
+
+typedef unsigned packed_t; //packed two's complement number
+
+
+int xbyte (packed_t word, int bytenum)
+{
+		println(int2bin(word));
+	//get # of bits to shift over so that word[bytenum] is in slot 0
+	int pos = bytenum <<3;
+
+	
+	//shift over by pos
+	int relavantBytes = (word >> pos);
+	
+	//if the word is negative we need to do more work?
+
+	//println(int2bin(sign));
+	
+	
+}
+
+
+int tsub_ok (int x, int y)
 {
 	
-	println(int2bin(255));
-	unsigned int u = 
-	hexToInt("FF");
+	
+	
+	
+}
+
+int divide_power2(int x, int k)
+{
+	
+	return x >>k;
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int main ()
+{
+	int test = 65;
+	int result = divide_power2(test, 3);
+	printf("%d \n", result);
 	
 	return 0;
 }

@@ -23,41 +23,30 @@ char * int2bin(int i)
 //that operation. 
 int tsub_ok (int x, int y)
 {
-
 	int z = x-y;
 	int result;
 	
-	
 	if (x >= 0)
 	{
-		
 		if(y >= 0)
 		{
-		
-	
 			result = z <=x ? 1 : 0;
-
 		}
 		else
 		{
-			
-			result = z > x ? 1 : 0;
-					
+			result = z > x ? 1 : 0;		
 		}
 	}
 	else
 	{
-
 		if (y >=0)
 		{
 			result = z <=x ? 1 : 0;
 		}
-		
-		
+			
 		else
 		{
 			result = z > x ? 1 : 0;
-
 		}
 		
 	}
