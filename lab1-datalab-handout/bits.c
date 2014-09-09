@@ -164,13 +164,11 @@ int absVal(int x) {
  *   Rating: 2
  */
 int allEvenBits(int x) {
-	int compare = (5 <<4) + 5;
-	compare = (compare <<4)+5;
-	compare = (compare <<4)+5;
-	compare = (compare <<4)+5;
-	compare = (compare <<4)+5;
-	compare = (compare <<4)+5;
-	compare = (compare <<4)+5;
+	int compare = 85;
+	compare = (compare <<8)+85;
+	compare = (compare <<8)+85;
+	compare = (compare <<8)+85;
+	
 	//compare =  01010101 01010101 01010101 01010101
 	//suppose x =11001010 11000001 10101011 01010101
 	//res =      01000000 01000000 00000001 01010101
@@ -444,5 +442,10 @@ int upperBits(int n) {
   return 2;
 }
 
-
+int main ()
+{
+	printf("%d /n", allEvenBits(14));
+	
+	return 2;
+}
 

@@ -103,9 +103,10 @@ int divide_power2(int x, int k)
 
 int main ()
 {
-	int test = 65;
-	int result = divide_power2(test, 3);
-	printf("%d \n", result);
+	int compare = 85;
+	compare = (compare <<8)+85;
+	compare = (compare <<8)+85;
 	
+	printf("%d \n", compare);
 	return 0;
 }
