@@ -140,7 +140,21 @@ NOTES:
  *   Rating: 4
  */
 int absVal(int x) {
-  return 2;
+		
+	//assume x is -14		            11111111 11111111 11111111 11110010
+	int shifted = x >>31;	//shifted = 11111111 11111111 11111111 11111111
+	int result = shifted ^ x; //result= 00000000 00000000 00000000 00001101
+	
+	
+	int subtractMe = ~shifted;
+	subtractMe = subtractMe +1;
+	
+	
+	
+	return result + subtractMe;
+	
+	
+
 }
 /* 
  * allEvenBits - return 1 if all even-numbered bits in word set to 1
@@ -150,13 +164,26 @@ int absVal(int x) {
  *   Rating: 2
  */
 int allEvenBits(int x) {
+	int compare = (5 <<4) + 5;
+	compare = (compare <<4)+5;
+	compare = (compare <<4)+5;
+	compare = (compare <<4)+5;
+	compare = (compare <<4)+5;
+	compare = (compare <<4)+5;
+	compare = (compare <<4)+5;
+	//compare =  01010101 01010101 01010101 01010101
+	//suppose x =11001010 11000001 10101011 01010101
+	//res =      01000000 01000000 00000001 01010101
+	int res = x & compare; 
+	
+	//if there were there were 1's in all the even spots, then res would equal compare (res ^ compare == 0)
+	int equality = compare ^ res;
+	return !equality;
 
 
 
 
-
-
-  return 2;
+  return compare;
 
 }
 /* 
@@ -167,6 +194,9 @@ int allEvenBits(int x) {
  *   Rating: 4 
  */
 int bang(int x) {
+	
+	//vince
+	
   return 2;
 }
 /* 
@@ -177,6 +207,8 @@ int bang(int x) {
  *   Rating: 1
  */
 int bitAnd(int x, int y) {
+	
+
   return 2;
 }
 /*
@@ -187,6 +219,7 @@ int bitAnd(int x, int y) {
  *   Rating: 4
  */
 int bitCount(int x) {
+	//vince
   return 2;
 }
 /* 
@@ -197,6 +230,7 @@ int bitCount(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
+	
   return 2;
 }
 /* 
@@ -344,6 +378,7 @@ int leastBitPos(int x) {
  *   Rating: 3 
  */
 int logicalShift(int x, int n) {
+	
   return 2;
 }
 /* 
@@ -408,3 +443,6 @@ int tmin(void) {
 int upperBits(int n) {
   return 2;
 }
+
+
+
