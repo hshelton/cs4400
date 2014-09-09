@@ -175,14 +175,9 @@ int allEvenBits(int x) {
 	int res = x & compare; 
 	
 	//if there were there were 1's in all the even spots, then res would equal compare (res ^ compare == 0)
-	int equality = compare ^ res;
+	int equality = 0;
+	equality = compare ^ res;
 	return !equality;
-
-
-
-
-  return compare;
-
 }
 /* 
  * bang - Compute !x without using !
