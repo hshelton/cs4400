@@ -442,10 +442,4 @@ int upperBits(int n) {
   return 2;
 }
 
-int main ()
-{
-	printf("%d /n", allEvenBits(14));
-	
-	return 2;
-}
 
