@@ -80,6 +80,21 @@ int divide_power2(int x, int k)
 	
 }
 
+int logicalShift(int x, int n)
+{
+	//if we have 00101010 = 42
+	int pos = 42;
+	pos|= (pos >>1);
+	pos|= (pos >>2);
+	pos |= (pos >>4);
+	pos |= (pos >>8);
+	pos |= (pos >>16);
+	return pos;
+	
+	
+	
+	
+}
 
 
 
@@ -103,10 +118,8 @@ int divide_power2(int x, int k)
 
 int main ()
 {
-	int compare = 85;
-	compare = (compare <<8)+85;
-	compare = (compare <<8)+85;
 	
-	printf("%d \n", compare);
+	
+	printf("%d \n", logicalShift(1, 1));
 	return 0;
 }

@@ -326,30 +326,20 @@ int isNonNegative(int x) {
  */
 int isPower2(int x) {
   /*
-   * A positive power of 2 will have exactly one 1
+   * A positive power of 2 will have exactly one 1.
+   * So if we subtract 1 from this number, the rest should be all ones
+   * 
    */
-  
-  /*
-  int i,j,k,l;
-
-  int slot0 = x & 15;
-  i = slot0 ^ 1 + slot0 ^2 + slot0 ^4 + slot0 ^8;
-  int slot1 = x <<8;
-  slot 1 = slot1 &15;
-  j = slot1 ^1 + slot1^2 + slot1^4 + slot1^8;
-  int slot2 = x >>16;
-  slot2 =slot2 & 15;
-  k = slot2 ^1 +slot2^2 + slot2^4 + slot2^8;
-  int slot3 = x >>24;
-  slot3 = slot3 & 15;
-  l = slot3 ^1 + slot2^2 + slot3^4 + slot3^8;
-
-  int sum = i + j + k +l;
-  */
-  return -2;
-
-  
+   int minusOne = (1<<31)>>31;
+   int res = x + minusOne;
+   
+   // x & res will be zero if the number is a power of two
+   return ! (x&res);
+   
+   
 }
+	
+  
 /*
  * isTmax - returns 1 if x is the maximum, two's complement number,
  *     and 0 otherwise 
