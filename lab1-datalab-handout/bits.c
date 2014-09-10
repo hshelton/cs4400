@@ -336,7 +336,7 @@ int isPower2(int x) {
    int res = x + minusOne;
    
    // x & res will be zero if the number is a power of two
-	return !(!(x &res)) & (!isZero);
+	return !(!((!(x &res)) & (!isZero)));
  
    
 }
