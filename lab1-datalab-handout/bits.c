@@ -333,6 +333,7 @@ int isPower2(int x) {
    *     x&res = 00000000 00000000 0000000 00000000
    */
    int isZero = (!(0 ^x)) & 1;
+   int isNegative = (x >>31) & 1;
    
    
    int minusOne = (1<<31)>>31; 
@@ -341,11 +342,13 @@ int isPower2(int x) {
    
    // x & res will be zero if the number is a power of two
    
-    //return wheter x & res = 0 && isZero = 0
+    //return wheter x & res = 0 && isZero = 0 && isNegative = 0
    int a = !(x & res);
    int b = !(isZero);
-   
-   return !( !a | !b); 
+   int c = !(isNegative);
+ 
+	//makeshift and
+   return !( !a | !b |!c); 
    
    
   
