@@ -401,7 +401,7 @@ int logicalShift(int x, int n) {
  *   Rating: 1
  */
 int minusOne(void) {
-  return 1;
+  return (1<<31)>>31;
 }
 /* 
  * negate - return -x 
