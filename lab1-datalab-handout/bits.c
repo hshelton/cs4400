@@ -325,7 +325,30 @@ int isNonNegative(int x) {
  *   Rating: 4
  */
 int isPower2(int x) {
-  return 2;
+  /*
+   * A positive power of 2 will have exactly one 1
+   */
+  
+  /*
+  int i,j,k,l;
+
+  int slot0 = x & 15;
+  i = slot0 ^ 1 + slot0 ^2 + slot0 ^4 + slot0 ^8;
+  int slot1 = x <<8;
+  slot 1 = slot1 &15;
+  j = slot1 ^1 + slot1^2 + slot1^4 + slot1^8;
+  int slot2 = x >>16;
+  slot2 =slot2 & 15;
+  k = slot2 ^1 +slot2^2 + slot2^4 + slot2^8;
+  int slot3 = x >>24;
+  slot3 = slot3 & 15;
+  l = slot3 ^1 + slot2^2 + slot3^4 + slot3^8;
+
+  int sum = i + j + k +l;
+  */
+  return -2;
+
+  
 }
 /*
  * isTmax - returns 1 if x is the maximum, two's complement number,
@@ -367,8 +390,19 @@ int leastBitPos(int x) {
  *   Rating: 3 
  */
 int logicalShift(int x, int n) {
-	
-  return 2;
+  /*
+    The strategy is to setup the correct mask to cancel out the 
+    ones that were inserted by the arithmetic right shift.
+    suppose we have -255   11111111 11111111 11111111 00000001
+    -255 >>2               11111111 11111111 11111111 11000000
+    to make logical &  w/  00111111 11111111 11111111 11111111
+   */
+  int mask = 1 <<31;
+  mask = (mask >>n) <<1; 
+  mask = ~mask;
+   x = x >>n;
+  return x & mask;
+ 
 }
 /* 
  * minusOne - return a value of -1 
@@ -377,7 +411,7 @@ int logicalShift(int x, int n) {
  *   Rating: 1
  */
 int minusOne(void) {
-  return 2;
+  return 1;
 }
 /* 
  * negate - return -x 
@@ -430,6 +464,7 @@ int tmin(void) {
  *  Rating: 1
  */
 int upperBits(int n) {
+
   return 2;
 }
 
