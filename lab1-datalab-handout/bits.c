@@ -332,11 +332,15 @@ int isPower2(int x) {
    */
    int isZero = (!(0 ^x)) & 1;
    
+   
    int minusOne = (1<<31)>>31;
    int res = x + minusOne;
    
    // x & res will be zero if the number is a power of two
-	return (!((!(x &res)) & (!isZero)));
+   
+   //return wheter x & res = 0 and isZero = 0
+   return !(x&res) && !(isZero);
+	
  
    
 }
