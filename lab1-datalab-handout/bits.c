@@ -328,19 +328,28 @@ int isPower2(int x) {
   /*
    * A positive power of 2 will have exactly one 1.
    * So if we subtract 1 from this number, the rest should be all ones
-   * 
+   * e.g. x = 32 00000000 00000000 0000001 00000000
+   * 	res = 31 00000000 00000000 0000000 11111111
+   *     x&res = 00000000 00000000 0000000 00000000
    */
    int isZero = (!(0 ^x)) & 1;
    
    
-   int minusOne = (1<<31)>>31;
+   int minusOne = (1<<31)>>31; 
    int res = x + minusOne;
+   
    
    // x & res will be zero if the number is a power of two
    
-   //return wheter x & res = 0 && isZero = 0
+    //return wheter x & res = 0 && isZero = 0
+   int a = !(x & res);
+   int b = !(isZero);
    
-   return !(!(!(x&res) & !(isZero)));
+   return !( !a | !b); 
+   
+   
+  
+   
 	
  
    
