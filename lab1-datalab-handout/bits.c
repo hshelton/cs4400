@@ -336,8 +336,8 @@ int isPower2(int x) {
    int res = x + minusOne;
    
    // x & res will be zero if the number is a power of two
-   //return ! (x&res) & (!isZero);
-   return 2;
+	return !(!(x &res)) & (!isZero);
+ 
    
 }
 	
@@ -362,7 +362,7 @@ int isTmax(int x) {
 int isZero(int x) {
 	
 
-  return (!(0 ^x)) & 1;;
+  return (!(0 ^x)) & 1;
 }
 /* 
  * leastBitPos - return a mask that marks the position of the
