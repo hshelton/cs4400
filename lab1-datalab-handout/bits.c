@@ -333,7 +333,7 @@ int isPower2(int x) {
    *     x&res = 00000000 00000000 0000000 00000000
    */
    int isZero = (!(0 ^x)) & 1;
-		isZero = 1^x | 0;
+		//isZero = 1^x | 0;
    int isNegative = (x >>31) & 1;
    
    
