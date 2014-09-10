@@ -378,7 +378,7 @@ int isTmax(int x) {
  *   Rating: 1
  */
 int isZero(int x) {
-	return 1^x | 0;
+	return (1^x) ^ 0;
 
  // return (!(0 ^x)) & 1;
 }
