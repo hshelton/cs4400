@@ -140,16 +140,17 @@ NOTES:
  *   Rating: 4
  */
 int absVal(int x) {
-		
-	//assume x is -14		            11111111 11111111 11111111 11110010
-	int shifted = x >>31;	//shifted = 11111111 11111111 11111111 11111111
-	int result = shifted ^ x; //result= 00000000 00000000 00000000 00001101
+	/* 1. right shift by 31 to get all ones or zeros
+	 * 2. XOR result of step 1 with x. For x<=0, this will result in x
+	 * 	  for x <1, this number will be one too high
+	 * 3. For positive x add 0, for negative x add -1. Return sum
+	 */	
 	
+	int shifted = x >>31;
+	int result = shifted ^ x; 
 	
 	int subtractMe = ~shifted;
 	subtractMe = subtractMe +1;
-	
-	
 	
 	return result + subtractMe;
 	
@@ -164,14 +165,18 @@ int absVal(int x) {
  *   Rating: 2
  */
 int allEvenBits(int x) {
-  
+  /* 1. Set up a mask of 01010101 01010101 01010101 01010101
+   * 2. bitwise AND this with x to check for even ones
+   * 3. if the number has all even-numbered bits set to 1, then
+   *    the result of step 2 will be zero, so return 1 & vice versa
+   */
   int comp = 85;
   int t1 = (comp<<8)+85;
   int t2 = (t1<<8) +85;
-  int t3 = (t2<<8) + 85;
+  int mask = (t2<<8) + 85;
 
-   int res = x & t3;
-   int same = t3 ^ res;
+   int res = x & mask;
+   int same = mask ^ res;
   return !same;
        
 }
@@ -327,36 +332,26 @@ int isNonNegative(int x) {
 int isPower2(int x) {
   /*
    * A positive power of 2 will have exactly one 1.
-   * So if we subtract 1 from this number, the rest should be all ones
+   * So if we subtract 1 from this number, the rest should be all ones.
+   * For x:x is power of 2, a bitwise AND with x should result in 0.
    * e.g. x = 32 00000000 00000000 0000001 00000000
    * 	res = 31 00000000 00000000 0000000 11111111
    *     x&res = 00000000 00000000 0000000 00000000
+   * Additionally, we know in advance to return 0 if x <= 0. 
+   * 
    */
    int isZero = (!(0 ^x)) & 1;
 	
    int isNegative = (x >>31) & 1;
-   
-   
+     
    int minusOne = (1<<31)>>31; 
    int res = x + minusOne;
-   
-   
-   // x & res will be zero if the number is a power of two
-   
-    //return wheter x & res = 0 && isZero = 0 && isNegative = 0
+
    int a = !(x & res);
    int b = !(isZero);
    int c = !(isNegative);
  
-	//makeshift and
    return !( !a | !b |!c); 
-   
-   
-  
-   
-	
- 
-   
 }
 	
   
@@ -368,6 +363,7 @@ int isPower2(int x) {
  *   Rating: 1
  */
 int isTmax(int x) {
+	
   return 2;
 }
 /*
@@ -391,6 +387,8 @@ int isZero(int x) {
  *   Rating: 2 
  */
 int leastBitPos(int x) {
+	
+	
   return 2;
 }
 /* 
@@ -402,12 +400,12 @@ int leastBitPos(int x) {
  *   Rating: 3 
  */
 int logicalShift(int x, int n) {
-  /*
-    The strategy is to setup the correct mask to cancel out the 
-    ones that were inserted by the arithmetic right shift.
-    suppose we have -255   11111111 11111111 11111111 00000001
-    -255 >>2               11111111 11111111 11111111 11000000
-    to make logical &  w/  00111111 11111111 11111111 11111111
+  /*The strategy is to setup the correct mask to cancel out the 
+   * ones that were inserted by the arithmetic right shift. If no ones 
+   * were inserted, doing bitwise AND with the mask doesn't change result.
+   * suppose we have -255   11111111 11111111 11111111 00000001
+   * -255 >>2               11111111 11111111 11111111 11000000
+   * to make logical &  w/  00111111 11111111 11111111 11111111
    */
   int mask = 1 <<31;
   mask = (mask >>n) <<1; 
@@ -465,7 +463,8 @@ int sign(int x) {
  *   Rating: 1
  */
 int tmin(void) {
-  return 2;
+	return 1 <<31;
+
 }
 /* 
  * upperBits - pads n upper bits with 1's
@@ -476,8 +475,18 @@ int tmin(void) {
  *  Rating: 1
  */
 int upperBits(int n) {
-
-  return 2;
+	/* 1. for n <32, right shift 10000000 00000000 00000000 00000000 by n-1 
+	 * 2. if n = 32, rigth shift 10000000 00000000 00000000 00000000 by
+	 * 31
+	 */ 
+	  int is_32 = ! n ^ 32;
+	  
+	  int mask = 1 <<31;
+	  mask = (mask >>n - is_32) <<1 - is_32; 
+	  
+	  
+	return mask;
+  
 }
 
 
