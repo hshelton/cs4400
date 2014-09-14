@@ -140,16 +140,17 @@ NOTES:
  *   Rating: 4
  */
 int absVal(int x) {
-		
-	//assume x is -14		            11111111 11111111 11111111 11110010
-	int shifted = x >>31;	//shifted = 11111111 11111111 11111111 11111111
-	int result = shifted ^ x; //result= 00000000 00000000 00000000 00001101
+	/* 1. right shift by 31 to get all ones or zeros
+	 * 2. XOR result of step 1 with x. For x<=0, this will result in x
+	 * 	  for x <1, this number will be one too high
+	 * 3. For positive x add 0, for negative x add -1. Return sum
+	 */	
 	
+	int shifted = x >>31;
+	int result = shifted ^ x; 
 	
 	int subtractMe = ~shifted;
 	subtractMe = subtractMe +1;
-	
-	
 	
 	return result + subtractMe;
 	
@@ -164,27 +165,20 @@ int absVal(int x) {
  *   Rating: 2
  */
 int allEvenBits(int x) {
-	int compare = (5 <<4) + 5;
-	compare = (compare <<4)+5;
-	compare = (compare <<4)+5;
-	compare = (compare <<4)+5;
-	compare = (compare <<4)+5;
-	compare = (compare <<4)+5;
-	compare = (compare <<4)+5;
-	//compare =  01010101 01010101 01010101 01010101
-	//suppose x =11001010 11000001 10101011 01010101
-	//res =      01000000 01000000 00000001 01010101
-	int res = x & compare; 
-	
-	//if there were there were 1's in all the even spots, then res would equal compare (res ^ compare == 0)
-	int equality = compare ^ res;
-	return !equality;
+  /* 1. Set up a mask of 01010101 01010101 01010101 01010101
+   * 2. bitwise AND this with x to check for even ones
+   * 3. if the number has all even-numbered bits set to 1, then
+   *    the result of step 2 will be zero, so return 1 & vice versa
+   */
+  int comp = 85;
+  int t1 = (comp<<8)+85;
+  int t2 = (t1<<8) +85;
+  int mask = (t2<<8) + 85;
 
-
-
-
-  return compare;
-
+   int res = x & mask;
+   int same = mask ^ res;
+  return !same;
+       
 }
 /* 
  * bang - Compute !x without using !
@@ -194,10 +188,12 @@ int allEvenBits(int x) {
  *   Rating: 4 
  */
 int bang(int x) {
+	/* zero is the only number where the sign bit doesn't change when negated */
+	int sign = x >>31;
+	int neg_sign = ((~x) + 1)>>31;
 	
-	//vince
-	
-  return 2;
+
+  return (~(sign | neg_sign)) & 1;
 }
 /* 
  * bitAnd - x&y using only ~ and | 
@@ -207,9 +203,12 @@ int bang(int x) {
  *   Rating: 1
  */
 int bitAnd(int x, int y) {
-	
+/*
+ * An AND gate can be constructed with three NOR gates*/
+  int not_x = ~x;
+  int not_y = ~y;
 
-  return 2;
+  return ~(not_x | not_y);
 }
 /*
  * bitCount - returns count of number of 1's in word
@@ -219,8 +218,41 @@ int bitAnd(int x, int y) {
  *   Rating: 4
  */
 int bitCount(int x) {
-	//vince
-  return 2;
+	/* Mask off bits one at time and add it to a running totoal */
+	int sum = 0;
+	 sum = sum + (x & 1);
+  sum = sum + ((x >> 1) & 1);
+  sum = sum + ((x >> 2) & 1);
+  sum = sum + ((x >> 3) & 1);
+  sum = sum + ((x >> 4) & 1);
+  sum = sum + ((x >> 5) & 1);
+  sum = sum + ((x >> 6) & 1);
+  sum = sum + ((x >> 7) & 1);
+  sum = sum + ((x >> 8) & 1);
+  sum = sum + ((x >> 9) & 1);
+  sum = sum + ((x >> 10) & 1);
+  sum = sum + ((x >> 11) & 1);
+  sum = sum + ((x >> 12) & 1);
+  sum = sum + ((x >> 13) & 1);
+  sum = sum + ((x >> 14) & 1);
+  sum = sum + ((x >> 15) & 1);
+  sum = sum + ((x >> 16) & 1);
+  sum = sum + ((x >> 17) & 1);
+  sum = sum + ((x >> 18) & 1);
+  sum = sum + ((x >> 19) & 1);
+  sum = sum + ((x >> 20) & 1);
+  sum = sum + ((x >> 21) & 1);
+  sum = sum + ((x >> 22) & 1);
+  sum = sum + ((x >> 23) & 1);
+  sum = sum + ((x >> 24) & 1);
+  sum = sum + ((x >> 25) & 1);
+  sum = sum + ((x >> 26) & 1);
+  sum = sum + ((x >> 27) & 1);
+  sum = sum + ((x >> 28) & 1);
+  sum = sum + ((x >> 29) & 1);
+  sum = sum + ((x >> 30) & 1);
+  sum = sum + ((x >> 31) & 1);
+  return sum;
 }
 /* 
  * conditional - same as x ? y : z 
@@ -230,8 +262,13 @@ int bitCount(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-	
-  return 2;
+  /* If 'x' is equal to anything other than zero, the left side of 'result' will equal 'y' and the right
+     side will equal 0.  If 'x' is zero, the left side of 'result' will equal 0 and the right side will
+     equal 'z'. */
+  int bool_x = (!x);
+  int result = (y & (~(!bool_x) + 1)) + (z & (~(bool_x) + 1));
+  
+  return result;
 }
 /* 
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -242,7 +279,11 @@ int conditional(int x, int y, int z) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-    return 2;
+	/* First find the sign bit, then figure out the bias you need to add if n <1, perform shift and add bias
+	 */
+	int sign = (x >>31) & 1;
+	int bias = (sign <<n) + ((~sign) + 1);
+    return (x + bias) >> n;
 }
 /* 
  * float_abs - Return bit-level equivalent of absolute value of f for
@@ -295,7 +336,12 @@ unsigned float_twice(unsigned uf) {
  *   Rating: 2
  */
 int getByte(int x, int n) {
-  return 2;
+	/* to get byte n shift left by 0, 8, or 24  and use mask to strip off all but the LSB
+	 */
+	int shift = n <<3;
+	int shifted = x >> shift;
+	return shifted & 0xff;
+
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -305,7 +351,19 @@ int getByte(int x, int n) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  /* Subtracts x from y and checks the sign of the result. Checks edge cases separately. */
+  int diff = y + ((~x) + 1);
+  int diff_sign = (diff >> 31) & 1;
+
+  int x_sign = (x >> 31) & 1;
+  int y_sign = (y >> 31) & 1;
+
+  int sign_check_1 = (x_sign | 0) & (!y_sign); 
+  int sign_check_2 = (y_sign | 0) & (!x_sign); 
+
+  int result = ((!(x ^ y)) | ((sign_check_1 | !diff_sign) & (!sign_check_2)));
+  return result;
+
 }
 /* 
  * isNegative - return 1 if x < 0, return 0 otherwise 
@@ -315,7 +373,11 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 2
  */
 int isNegative(int x) {
-  return 2;
+/* Masks off the sign bit and returns it */
+  int sign_bit = (x >> 31) & 1;
+
+  return sign_bit;
+
 }
 /* 
  * isNonNegative - return 1 if x >= 0, return 0 otherwise 
@@ -325,7 +387,12 @@ int isNegative(int x) {
  *   Rating: 3
  */
 int isNonNegative(int x) {
-  return 2;
+	/* Masks off the sign bit, returns !sign bit
+	 */
+	int sign_bit = (x >> 31) & 1;
+
+  return !(sign_bit);
+
 }
 /*
  * isPower2 - returns 1 if x is a power of 2, and 0 otherwise
@@ -336,8 +403,31 @@ int isNonNegative(int x) {
  *   Rating: 4
  */
 int isPower2(int x) {
-  return 2;
+  /*
+   * A positive power of 2 will have exactly one 1.
+   * So if we subtract 1 from this number, the rest should be all ones.
+   * For x:x is power of 2, a bitwise AND with x should result in 0.
+   * e.g. x = 32 00000000 00000000 0000001 00000000
+   * 	res = 31 00000000 00000000 0000000 11111111
+   *     x&res = 00000000 00000000 0000000 00000000
+   * Additionally, we know in advance to return 0 if x <= 0. 
+   * 
+   */
+   int isZero = (!(0 ^x)) & 1;
+	
+   int isNegative = (x >>31) & 1;
+     
+   int minusOne = (1<<31)>>31; 
+   int res = x + minusOne;
+
+   int a = !(x & res);
+   int b = !(isZero);
+   int c = !(isNegative);
+ 
+   return !( !a | !b |!c); 
 }
+	
+  
 /*
  * isTmax - returns 1 if x is the maximum, two's complement number,
  *     and 0 otherwise 
@@ -346,6 +436,8 @@ int isPower2(int x) {
  *   Rating: 1
  */
 int isTmax(int x) {
+
+	
   return 2;
 }
 /*
@@ -356,7 +448,8 @@ int isTmax(int x) {
  *   Rating: 1
  */
 int isZero(int x) {
-  return 2;
+/* XOR with zero to compute equality */
+  return !(x ^ 0);
 }
 /* 
  * leastBitPos - return a mask that marks the position of the
@@ -367,6 +460,8 @@ int isZero(int x) {
  *   Rating: 2 
  */
 int leastBitPos(int x) {
+	
+	
   return 2;
 }
 /* 
@@ -378,8 +473,19 @@ int leastBitPos(int x) {
  *   Rating: 3 
  */
 int logicalShift(int x, int n) {
-	
-  return 2;
+  /*The strategy is to setup the correct mask to cancel out the 
+   * ones that were inserted by the arithmetic right shift. If no ones 
+   * were inserted, doing bitwise AND with the mask doesn't change result.
+   * suppose we have -255   11111111 11111111 11111111 00000001
+   * -255 >>2               11111111 11111111 11111111 11000000
+   * to make logical &  w/  00111111 11111111 11111111 11111111
+   */
+  int mask = 1 <<31;
+  mask = (mask >>n) <<1; 
+  mask = ~mask;
+   x = x >>n;
+  return x & mask;
+ 
 }
 /* 
  * minusOne - return a value of -1 
@@ -388,7 +494,7 @@ int logicalShift(int x, int n) {
  *   Rating: 1
  */
 int minusOne(void) {
-  return 2;
+  return (1<<31)>>31;
 }
 /* 
  * negate - return -x 
@@ -398,7 +504,10 @@ int minusOne(void) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+	  /* flip the bits and add 1 */
+  int neg_x = (~(x) + 1);
+  return neg_x;
+
 }
 /* 
  * replaceByte(x,n,c) - Replace byte n in x with c
@@ -421,7 +530,14 @@ int replaceByte(int x, int n, int c) {
  *  Rating: 2
  */
 int sign(int x) {
-    return 2;
+ /* Get sign bit and invert it. 
+  return x_shifted_31 | (negx_shifted_31 & 1);
+  */
+  int equalsZero = !(!(x ^ 0));
+  int bias = ~(equalsZero) +1;
+  
+  int sign = (!((x >>31) & 1))+ bias; 
+  
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -430,7 +546,8 @@ int sign(int x) {
  *   Rating: 1
  */
 int tmin(void) {
-  return 2;
+	return 1 <<31;
+
 }
 /* 
  * upperBits - pads n upper bits with 1's
@@ -441,8 +558,18 @@ int tmin(void) {
  *  Rating: 1
  */
 int upperBits(int n) {
-  return 2;
+	/* 1. for n <32, right shift 10000000 00000000 00000000 00000000 by n-1 
+	 * 2. if n = 32, rigth shift 10000000 00000000 00000000 00000000 by
+	 * 31
+	 */ 
+	  int is_32 = ! n ^ 32;
+	  
+	  int mask = 1 <<31;
+	  mask = (mask >>n - is_32) <<1 - is_32; 
+	  
+	  
+	return mask;
+  
 }
-
 
 
