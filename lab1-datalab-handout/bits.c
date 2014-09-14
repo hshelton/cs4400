@@ -531,7 +531,7 @@ int replaceByte(int x, int n, int c) {
  */
 int sign(int x) {
   /* Extract the signed bit. Negate either all ones or all zeros, return whether the sign is negative or
-   * (- (x >>31) & 1) or -1 if neg. 
+   * (- (x >>31) & 1) or -1 if neg. */
   int x_shifted_31 = x >> 31;
   int negx_shifted_31 = (~x + 1) >> 31;
 
