@@ -141,7 +141,7 @@ NOTES:
  */
 int absVal(int x) {
 	/* 1. right shift by 31 to get all ones or zeros
-	 * 2. XOR result of step 1 with x. For x<=0, this will result in x
+	 * 2. XOR result of step 1 with x. For x>=0, this will result in x
 	 * 	  for x <1, this number will be one too high
 	 * 3. For positive x add 0, for negative x add -1. Return sum
 	 */	
@@ -530,13 +530,12 @@ int replaceByte(int x, int n, int c) {
  *  Rating: 2
  */
 int sign(int x) {
- /* Get sign bit and invert it. 
+  /* Extract the signed bit. Negate either all ones or all zeros, return whether the sign is negative or
+   * (- (x >>31) & 1) or -1 if neg. 
+  int x_shifted_31 = x >> 31;
+  int negx_shifted_31 = (~x + 1) >> 31;
+
   return x_shifted_31 | (negx_shifted_31 & 1);
-  */
-  int equalsZero = !(!(x ^ 0));
-  int bias = ~(equalsZero) +1;
-  
-  int sign = (!((x >>31) & 1))+ bias; 
   
 }
 /* 
@@ -559,7 +558,7 @@ int tmin(void) {
  */
 int upperBits(int n) {
 	/* 1. for n <32, right shift 10000000 00000000 00000000 00000000 by n-1 
-	 * 2. if n = 32, rigth shift 10000000 00000000 00000000 00000000 by
+	 * 2. if n = 32, right shift 10000000 00000000 00000000 00000000 by
 	 * 31
 	 */ 
 	  int is_32 = ! n ^ 32;
