@@ -2,7 +2,7 @@
  * CS:APP Data Lab 
  * 
  * Hayden Shelton u0658884
- * 
+ * I worked with Vince Oveson on this lab assignment
  * bits.c - Source file with your solutions to the Lab.
  *          This is the file you will hand in to your instructor.
  *
