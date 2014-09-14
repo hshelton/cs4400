@@ -561,11 +561,9 @@ int upperBits(int n) {
 	 * 2. if n = 32, right shift 10000000 00000000 00000000 00000000 by
 	 * 31
 	 */ 
-	  int is_32 = ! n ^ 32;
-	  
-	  int mask = 1 <<31;
-	  mask = (mask >>n - is_32) <<1 - is_32; 
-	  
+	  int mask = 1 << 31;
+  int is_32 = (~(!(n ^ 32))) + 1;
+  mask = (mask >> (n + is_32)) << (1 + is_32);
 	  
 	return mask;
   
