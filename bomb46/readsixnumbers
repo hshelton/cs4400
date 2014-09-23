@@ -1,0 +1,18 @@
+0000000000401420 <read_six_numbers>:
+  401420:	48 83 ec 18          	sub    $0x18,%rsp
+  401424:	48 89 f2             	mov    %rsi,%rdx
+  401427:	48 8d 4e 04          	lea    0x4(%rsi),%rcx
+  40142b:	48 8d 46 14          	lea    0x14(%rsi),%rax
+  40142f:	48 89 44 24 08       	mov    %rax,0x8(%rsp)
+  401434:	48 8d 46 10          	lea    0x10(%rsi),%rax
+  401438:	48 89 04 24          	mov    %rax,(%rsp)
+  40143c:	4c 8d 4e 0c          	lea    0xc(%rsi),%r9
+  401440:	4c 8d 46 08          	lea    0x8(%rsi),%r8
+  401444:	be 6e 24 40 00       	mov    $0x40246e,%esi
+  401449:	b8 00 00 00 00       	mov    $0x0,%eax
+  40144e:	e8 75 f6 ff ff       	callq  400ac8 <__isoc99_sscanf@plt>
+  401453:	83 f8 05             	cmp    $0x5,%eax
+  401456:	7f 05                	jg     40145d <read_six_numbers+0x3d>
+  401458:	e8 8d ff ff ff       	callq  4013ea <explode_bomb>
+  40145d:	48 83 c4 18          	add    $0x18,%rsp
+  401461:	c3                   	retq   

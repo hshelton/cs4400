@@ -1,0 +1,27 @@
+0000000000401036 <phase_2>:
+  401036:	55                   	push   %rbp
+  401037:	53                   	push   %rbx
+  401038:	48 83 ec 28          	sub    $0x28,%rsp
+  40103c:	48 89 e6             	mov    %rsp,%rsi
+  40103f:	e8 dc 03 00 00       	callq  401420 <read_six_numbers>
+  401044:	83 3c 24 00          	cmpl   $0x0,(%rsp)
+  401048:	75 07                	jne    401051 <phase_2+0x1b>
+  40104a:	83 7c 24 04 01       	cmpl   $0x1,0x4(%rsp)
+  40104f:	74 05                	je     401056 <phase_2+0x20>
+  401051:	e8 94 03 00 00       	callq  4013ea <explode_bomb>
+  401056:	48 89 e5             	mov    %rsp,%rbp
+  401059:	48 8d 5c 24 08       	lea    0x8(%rsp),%rbx
+  40105e:	48 83 c5 18          	add    $0x18,%rbp
+  401062:	8b 43 fc             	mov    -0x4(%rbx),%eax
+  401065:	03 43 f8             	add    -0x8(%rbx),%eax
+  401068:	39 03                	cmp    %eax,(%rbx)
+  40106a:	74 05                	je     401071 <phase_2+0x3b>
+  40106c:	e8 79 03 00 00       	callq  4013ea <explode_bomb>
+  401071:	48 83 c3 04          	add    $0x4,%rbx
+  401075:	48 39 eb             	cmp    %rbp,%rbx
+  401078:	75 e8                	jne    401062 <phase_2+0x2c>
+  40107a:	48 83 c4 28          	add    $0x28,%rsp
+  40107e:	5b                   	pop    %rbx
+  40107f:	5d                   	pop    %rbp
+  401080:	c3                   	retq   
+
