@@ -50,22 +50,25 @@ void rotate(int dim, pixel *src, pixel *dst)
 	/* #define RIDX(i,j,n) ((i)*(n)+j)) */
 	
 	int i, j, DMOMI, dstPos;
-	DMOMI = dim-1;
+
+	DMOMI = dim;
 	int srcPos = 0;
+	
 	for (i = 0; i < dim; i++)
 	{
-		dstPos = DMOMI; /* dstPos starts at dim -1 -i and increases by dim each iteration */
+		
+		dstPos = --DMOMI; /* dstPos starts at dim -1 -i and increases by dim each iteration */
 		for (j = 0; j <dim; j++)
 		{
 		  
 			dst[dstPos] = src[srcPos];
 			
-			
-			dstPos += dim;
 			srcPos++;
+			dstPos += dim;
+			
 			
 		}
-		DMOMI --;
+		
 		
 		
 	}
