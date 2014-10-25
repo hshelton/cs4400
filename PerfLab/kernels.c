@@ -40,10 +40,37 @@ void naive_rotate(int dim, pixel *src, pixel *dst)
  * rotate - Your current working version of rotate
  * IMPORTANT: This is the version you will be graded on
  */
-char rotate_descr[] = "rotate: Current working version";
+char rotate_descr[] = "Hayden's Optimized rotate";
+
+/* Computes the result of rotating the image src by 90 deg and stores the
+ * result in destination image dst. dim is the dimension of the image */
 void rotate(int dim, pixel *src, pixel *dst) 
 {
-  naive_rotate(dim, src, dst);
+	/* naive_rotate(dim, src, dst); */
+	/* #define RIDX(i,j,n) ((i)*(n)+j)) */
+	
+	int i, j, DMOMI; 
+	
+
+	for (i = 0; i < dim; i++)
+	{
+		DMOMI = dim-1-i;
+		for (j = 0; j <dim; j++)
+		{
+		   dst[j * dim + DMOMI] = src[i * dim + j];
+			
+			
+			
+			
+		}
+		
+		
+		
+	}
+	
+	
+	
+  
 }
 
 /*********************************************************************
