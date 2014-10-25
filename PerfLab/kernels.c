@@ -49,21 +49,23 @@ void rotate(int dim, pixel *src, pixel *dst)
 	/* naive_rotate(dim, src, dst); */
 	/* #define RIDX(i,j,n) ((i)*(n)+j)) */
 	
-	int i, j, DMOMI; 
-	
-
+	int i, j, DMOMI, dstPos;
+	DMOMI = dim-1;
+	int srcPos = 0;
 	for (i = 0; i < dim; i++)
 	{
-		DMOMI = dim-1-i;
+		dstPos = DMOMI; /* dstPos starts at dim -1 -i and increases by dim each iteration */
 		for (j = 0; j <dim; j++)
 		{
 		  
-			dst[RIDX(j, DMOMI, dim)] = src[RIDX(i, j, dim)];
+			dst[dstPos] = src[srcPos];
 			
 			
+			dstPos += dim;
+			srcPos++;
 			
 		}
-		
+		DMOMI --;
 		
 		
 	}
