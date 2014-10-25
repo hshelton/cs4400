@@ -57,8 +57,8 @@ void rotate(int dim, pixel *src, pixel *dst)
 		DMOMI = dim-1-i;
 		for (j = 0; j <dim; j++)
 		{
-		   dst[j * dim + DMOMI] = src[i * dim + j];
-			
+		  
+			dst[RIDX(j, DMOMI, dim)] = src[RIDX(i, j, dim)];
 			
 			
 			
