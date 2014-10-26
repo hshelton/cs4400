@@ -46,23 +46,37 @@ char rotate_descr[] = "Hayden's Optimized rotate";
  * result in destination image dst. dim is the dimension of the image */
 void rotate(int dim, pixel *src, pixel *dst) 
 {
-  int i, j, k;
-  int l = 0;
-  int limit = dim -3;
-  for (i = 0; i < limit; i+=4)
+  int i, j, k, l, d, j2;
+
+  int limit = dim -7;
+
+  for (i = 0; i < limit; i+=8)
     {
 		    for (j = 0; j < dim; j++)
 		    {
 				k = i;
-				dst[RIDX(j, dim-1-i, dim)] = src[RIDX(i, j, dim)];
-				k++;
-				dst[RIDX(j, dim-1-k, dim)] = src[RIDX(k, j, dim)];
-				k++;
-				dst[RIDX(j, dim-1-k, dim)] = src[RIDX(k, j, dim)];
-				k++;
-				dst[RIDX(j, dim-1-k, dim)] = src[RIDX(k, j, dim)];
+				j2 = j;
+				l= dim -1 -i;
+				d = dim;
 				
+				dst[RIDX(j2, l, dim)] =src[RIDX(k, j, d)];
+				k++;
+				dst[RIDX(j2, l-1, dim)] = src[RIDX(k, j, d)];
+				k++;
+				dst[RIDX(j2, l-2, dim)] = src[RIDX(k, j, d)];
+				k++;
+				dst[RIDX(j2, l-3, dim)] = src[RIDX(k, j, d)];
+				k++;
+				dst[RIDX(j2, l-4, dim)] = src[RIDX(k, j, d)];
 				
+	
+				k++;
+				dst[RIDX(j2, l-5, dim)] = src[RIDX(k, j, d)];
+				k++;
+				dst[RIDX(j2, l-6, dim)] = src[RIDX(k, j, d)];
+				k++;
+				dst[RIDX(j2, l-7, dim)] = src[RIDX(k, j, d)];
+	
 			}
 
 	}
@@ -71,6 +85,20 @@ void rotate(int dim, pixel *src, pixel *dst)
 	
   
 }
+
+/* 
+ * naive_rotate - The naive baseline version of rotate 
+ */
+char test1_rotate_descr[] = "test1_rotate: test baseline implementation i & swapped";
+void test1_rotate(int dim, pixel *src, pixel *dst) 
+{
+  int i, j;
+  
+  for (j = 0; j < dim; j++)
+    for (i = 0; i < dim; i++)
+      dst[RIDX(j, dim-1-i, dim)] = src[RIDX(i, j, dim)];
+}
+
 
 /*********************************************************************
  * register_rotate_functions - Register all of your different versions
@@ -84,6 +112,7 @@ void register_rotate_functions()
 {
   add_rotate_function(&naive_rotate, naive_rotate_descr);   
   add_rotate_function(&rotate, rotate_descr);   
+  add_rotate_function(&test1_rotate, test1_rotate_descr);  
   /* ... Register additional test functions here */
 }
 
