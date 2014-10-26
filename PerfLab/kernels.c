@@ -46,31 +46,25 @@ char rotate_descr[] = "Hayden's Optimized rotate";
  * result in destination image dst. dim is the dimension of the image */
 void rotate(int dim, pixel *src, pixel *dst) 
 {
-	/* naive_rotate(dim, src, dst); */
-	/* #define RIDX(i,j,n) ((i)*(n)+j)) */
-	
-	int i, j, DMOMI, dstPos;
+  int i, j, k;
+  int l = 0;
+  int limit = dim -3;
+  for (i = 0; i < limit; i+=4)
+    {
+		    for (j = 0; j < dim; j++)
+		    {
+				k = i;
+				dst[RIDX(j, dim-1-i, dim)] = src[RIDX(i, j, dim)];
+				k++;
+				dst[RIDX(j, dim-1-k, dim)] = src[RIDX(k, j, dim)];
+				k++;
+				dst[RIDX(j, dim-1-k, dim)] = src[RIDX(k, j, dim)];
+				k++;
+				dst[RIDX(j, dim-1-k, dim)] = src[RIDX(k, j, dim)];
+				
+				
+			}
 
-	DMOMI = dim;
-	int srcPos = 0;
-	
-	for (i = 0; i < dim; i++)
-	{
-		
-		dstPos = --DMOMI; /* dstPos starts at dim -1 -i and increases by dim each iteration */
-		for (j = 0; j <dim; j++)
-		{
-		  
-			dst[dstPos] = src[srcPos];
-			
-			srcPos++;
-			dstPos += dim;
-			
-			
-		}
-		
-		
-		
 	}
 	
 	
