@@ -49,7 +49,7 @@ void rotate(int dim, pixel *src, pixel *dst)
   int i, j, k, l, d, j2;
 
   int limit = dim -7;
-
+/* perform 8 way loop unrolling and create local varables to reduce loads */
   for (i = 0; i < limit; i+=8)
     {
 		    for (j = 0; j < dim; j++)
@@ -89,7 +89,7 @@ void rotate(int dim, pixel *src, pixel *dst)
 /* 
  * naive_rotate - The naive baseline version of rotate 
  */
-char test1_rotate_descr[] = "test1_rotate: test baseline implementation i & swapped";
+char test1_rotate_descr[] = "test1_rotate: test baseline implementation i & j swapped";
 void test1_rotate(int dim, pixel *src, pixel *dst) 
 {
   int i, j;
