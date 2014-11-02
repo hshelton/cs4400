@@ -341,7 +341,7 @@ void naive_smooth(int dim, pixel *src, pixel *dst)
 char smooth_descr[] = "Hayden's Optimized smooth";
 void smooth(int dim, pixel *src, pixel *dst) 
 {
-	/*
+	
   int i, j;
    handle smoothing of edge squares as a special case 
   top row 
@@ -350,19 +350,19 @@ void smooth(int dim, pixel *src, pixel *dst)
 	  dst[RIDX(0, i, dim)] = avg(dim, 0, i, src);
   }
   
-    /* first column 
+    /* first column */
   for(i = 0; i < dim ; i++)
   {
 	  dst[RIDX(i, 0, dim)] = avg(dim, i, 0, src);
   }
   
-     /last column 
+     /* last colum */
   for(i = 0; i < dim ; i++)
   {
 	  dst[RIDX(i, dim-1, dim)] = avg(dim, i, dim-1, src);
   }
   
-  /*bottom row 
+  //bottom row
     for(i = 0; i < dim ; i++)
   {
 	  dst[RIDX(dim-1, i, dim)] = avg(dim, dim-1, i, src);
@@ -372,15 +372,15 @@ void smooth(int dim, pixel *src, pixel *dst)
   for (i = 1; i < dim -1 ; i++)
     for (j = 1; j < dim -1; j++)
     {
-      dst[RIDX(i, j, dim)] = avg2(dim, i, j, src);
+      dst[RIDX(i, j, dim)] = avg(dim, i, j, src);
       
   }
-  */
-    int i, j;
   
-  for (i = 0; i < dim; i++)
-    for (j = 0; j < dim; j++)
-      dst[RIDX(i, j, dim)] = check_average(dim, i, j, src);
+   // int i, j;
+  
+ // for (i = 0; i < dim; i++)
+  //  for (j = 0; j < dim; j++)
+    //  dst[RIDX(i, j, dim)] = check_average(dim, i, j, src);
 
 }
 
