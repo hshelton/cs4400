@@ -181,6 +181,8 @@ static pixel avg(int dim, int i, int j, pixel *src)
   pixel_sum sum;
   pixel current_pixel;
   
+  
+  
   initialize_pixel_sum(&sum);
   for(ii = max(i-1, 0); ii <= min(i+1, dim-1); ii++) 
     for(jj = max(j-1, 0); jj <= min(j+1, dim-1); jj++) {
@@ -193,6 +195,127 @@ static pixel avg(int dim, int i, int j, pixel *src)
   assign_sum_to_pixel(&current_pixel, sum);
   return current_pixel;
 }
+static pixel check_average(int dim, int i, int j, pixel *src) {
+  pixel result;
+  int num = 0;
+  int ii, jj;
+  int sum0, sum1, sum2;
+  int top_left_i, top_left_j;
+  int bottom_right_i, bottom_right_j;
+
+  top_left_i = max(i-1, 0);
+  top_left_j = max(j-1, 0);
+  bottom_right_i = min(i+1, dim-1); 
+  bottom_right_j = min(j+1, dim-1);
+
+  sum0 = sum1 = sum2 = 0;
+  for(ii=top_left_i; ii <= bottom_right_i; ii++) {
+    for(jj=top_left_j; jj <= bottom_right_j; jj++) {
+      num++;
+      sum0 += (int) src[RIDX(ii,jj,dim)].red;
+      sum1 += (int) src[RIDX(ii,jj,dim)].green;
+      sum2 += (int) src[RIDX(ii,jj,dim)].blue;
+    }
+  }
+  // average is weighted, add pixel value at (i,j) again
+  sum0 += (int) src[RIDX(i,j,dim)].red;
+  sum1 += (int) src[RIDX(i,j,dim)].green;
+  sum2 += (int) src[RIDX(i,j,dim)].blue;
+  num++;
+  result.red = (unsigned char) (sum0/num);
+  result.green = (unsigned char) (sum1/num);
+  result.blue = (unsigned char) (sum2/num);
+ 
+  return result;
+}
+/* 
+ * avg - Returns averaged pixel value at (i,j) 
+ */
+static pixel avg2(int dim, int i, int j, pixel *src) 
+{
+
+  pixel cp1;
+  pixel cp2;
+  pixel result;
+  int redSum, greenSum, blueSum;
+  
+  redSum = greenSum = blueSum = 0;
+
+	cp1 = src[RIDX(i, j, dim)];
+
+	cp2 = src[RIDX(i+1, j+1, dim)];
+	/* add the double weighted i, j */
+	redSum += (int)cp1.red;
+
+	blueSum += (int)cp1.blue;
+	
+	greenSum += (int)cp1.green;
+
+	redSum += (int)cp1.red;
+
+	blueSum += (int)cp1.blue;
+	
+	greenSum += (int)cp1.green;
+	
+	/* add the other 8 in manually */
+	redSum += (int)cp2.red;
+	blueSum += (int)cp2.blue;
+	greenSum += (int)cp2.green;
+	
+	cp1 = src[RIDX(i-1, j-1, dim)];
+	cp2 = src[RIDX(i-1, j, dim)];
+	
+	redSum += (int)cp1.red;
+	blueSum += (int)cp1.blue;
+	greenSum += (int)cp1.green;
+	
+	redSum += (int)cp2.red;
+	blueSum += (int)cp2.blue;
+	greenSum += (int)cp2.green;
+	
+	cp1 = src[RIDX(i-1, j+1, dim)];
+	cp2 = src[RIDX(i, j-1, dim)];
+	redSum += (int)cp1.red;
+	blueSum += (int)cp1.blue;
+	greenSum += (int)cp1.green;
+	
+	redSum += (int)cp2.red;
+	blueSum += (int)cp2.blue;
+	greenSum += (int)cp2.green;
+	
+	cp1 = src[RIDX(i, j+1, dim)];
+	cp2 = src[RIDX(i+1, j-1, dim)];
+	redSum += (int)cp1.red;
+	blueSum += (int)cp1.blue;
+	greenSum += (int)cp1.green;
+	
+	redSum += (int)cp2.red;
+	blueSum += (int)cp2.blue;
+	greenSum += (int)cp2.green;
+		
+
+	cp2 = src[RIDX(i+1, j, dim)];
+	redSum += (int)cp1.red;
+	blueSum += (int) cp1.blue;
+	greenSum +=(int)cp1.green;
+	
+	redSum += (int) cp2.red;
+	blueSum += (int)cp2.blue;
+	greenSum += (int) cp2.green;
+	
+	redSum = (unsigned char) (redSum / 10);
+	blueSum = (unsigned char) (blueSum /10);
+	greenSum = (unsigned char) (greenSum /10);
+	
+	result.red = redSum;
+	result.blue =  blueSum;
+	result.green =  greenSum;
+	
+	return result;
+  
+
+}
+
 
 /******************************************************
  * Your different versions of the smooth kernel go here
@@ -215,10 +338,50 @@ void naive_smooth(int dim, pixel *src, pixel *dst)
  * smooth - Your current working version of smooth. 
  * IMPORTANT: This is the version you will be graded on
  */
-char smooth_descr[] = "smooth: Current working version";
+char smooth_descr[] = "Hayden's Optimized smooth";
 void smooth(int dim, pixel *src, pixel *dst) 
 {
-  naive_smooth(dim, src, dst);
+	/*
+  int i, j;
+   handle smoothing of edge squares as a special case 
+  top row 
+  for(i = 0; i < dim ; i++)
+  {
+	  dst[RIDX(0, i, dim)] = avg(dim, 0, i, src);
+  }
+  
+    /* first column 
+  for(i = 0; i < dim ; i++)
+  {
+	  dst[RIDX(i, 0, dim)] = avg(dim, i, 0, src);
+  }
+  
+     /last column 
+  for(i = 0; i < dim ; i++)
+  {
+	  dst[RIDX(i, dim-1, dim)] = avg(dim, i, dim-1, src);
+  }
+  
+  /*bottom row 
+    for(i = 0; i < dim ; i++)
+  {
+	  dst[RIDX(dim-1, i, dim)] = avg(dim, dim-1, i, src);
+	
+  }
+  
+  for (i = 1; i < dim -1 ; i++)
+    for (j = 1; j < dim -1; j++)
+    {
+      dst[RIDX(i, j, dim)] = avg2(dim, i, j, src);
+      
+  }
+  */
+    int i, j;
+  
+  for (i = 0; i < dim; i++)
+    for (j = 0; j < dim; j++)
+      dst[RIDX(i, j, dim)] = check_average(dim, i, j, src);
+
 }
 
 
