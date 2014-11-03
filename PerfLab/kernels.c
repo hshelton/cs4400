@@ -40,11 +40,11 @@ void naive_rotate(int dim, pixel *src, pixel *dst)
  * rotate - Your current working version of rotate
  * IMPORTANT: This is the version you will be graded on
  */
-char rotate_descr[] = "Hayden's Optimized rotate";
+char rotate_descr[] = "4 way unrolling and reduced calculations";
 
 /* Computes the result of rotating the image src by 90 deg and stores the
  * result in destination image dst. dim is the dimension of the image */
-void rotate(int dim, pixel *src, pixel *dst) 
+void test2_rotate(int dim, pixel *src, pixel *dst) 
 {
   int i, j, k, k2, l, pos,  si;
 
@@ -101,53 +101,59 @@ void rotate(int dim, pixel *src, pixel *dst)
 }
 
 /* 
- * naive_rotate - The naive baseline version of rotate 
+ *  
  */
-char test1_rotate_descr[] = "test1_rotate: test baseline implementation i & j swapped";
+char test1_rotate_descr[] = "test1_rotate: test 4way unroll w/  i & j swapped";
 void test1_rotate(int dim, pixel *src, pixel *dst) 
 {
-  int i, j;
-  
-  for (j = 0; j < dim; j++)
-    for (i = 0; i < dim; i++)
-      dst[RIDX(j, dim-1-i, dim)] = src[RIDX(i, j, dim)];
+
+  int i, j, k, k2, l, pos,  si;
+
+  int limit = dim -3;
+  /* perform 4 way loop unrolling and reduced calculations */
+
+      for (j = 0;j < dim; j++)
+	{
+	for(i =0; i <limit; i+=4)
+        {
+          l= dim -1 -i;
+          pos =(i * dim) + l;
+          si= (j * dim) + i;
+          dst[pos--] =src[si];
+          si +=dim;
+          dst[pos--] = src[si];
+          si += dim;
+          dst[pos--] = src[si];
+          si += dim;
+          dst[pos--] = src[si];
+        }
+    }
+
+
 }
 
-char test2_rotate_descr[] = "test2_rotate: 4 way unrolling";
-void test2_rotate(int dim, pixel *src, pixel *dst) 
+char test2_rotate_descr[] = "test2_rotate: 8 way unrolling";
+void rotate(int dim, pixel *src, pixel *dst) 
 {
    int i, j, k, k2, l, pos,  si;
 
   int limit = dim -3;
-/* perform 8 way loop unrolling and create local varables to reduce loads */
+/* perform 4 way loop unrolling and reduced calculations */
   for (i = 0; i < limit; i+=4)
     {
         for (j = 0;j < dim; j++)
-        {
-        
-                    k =i;
+        {              
         l= dim -1 -i;
-              pos =(j * dim) + l;
-        si= (k * dim) + j;
-        
+        pos =(j * dim) + l;
+        si= (i * dim) + j;
         dst[pos--] =src[si];
-        
-        
         si +=dim;
-    
         dst[pos--] = src[si];
-        
-        
         si += dim;
         dst[pos--] = src[si];
-             
-        
         si += dim;
         dst[pos--] = src[si];
-             
-             
-     
-  
+            
       }
 
   }
@@ -299,66 +305,58 @@ static pixel avg2(int dim, int i, int j, pixel *src)
   int redSum, greenSum, blueSum, num;
   
   redSum = greenSum = blueSum = 0;
-  
-	cp1 = src[RIDX(i, j, dim)];
-	cp2 = src[RIDX(i+1, j+1, dim)];
-	/* add the double weighted i, j */
-	redSum += (int)(cp1.red * 2);
-
-	blueSum += (int)(cp1.blue *2);
-	
-	greenSum += (int)(cp1.green *2);
-    
-       
-	
-	/* add the other 8 in manually */
-	redSum += (int)(cp2.red);
-	blueSum += (int)(cp2.blue);
-	greenSum += (int)(cp2.green);
-	
+        
 	cp1 = src[RIDX(i-1, j-1, dim)];
 	cp2 = src[RIDX(i-1, j, dim)];
 	
-	redSum += (int)(cp1.red);
-	blueSum += (int)(cp1.blue);
-	greenSum += (int)(cp1.green);
+	redSum+= (int)cp1.red;
+	greenSum +=(int)cp1.green;
+	blueSum+= (int)cp1.blue;
+	redSum+= (int)cp2.red;
+        greenSum +=(int)cp2.green;
+        blueSum+= (int)cp2.blue;
+
+        cp1 = src[RIDX(i-1, j+1, dim)];
+        cp2 = src[RIDX(i,j-1, dim)];
+
+        redSum+= (int)cp1.red;
+        greenSum +=(int)cp1.green;
+        blueSum+= (int)cp1.blue;
+        redSum+= (int)cp2.red;
+        greenSum +=(int)cp2.green;
+        blueSum+= (int)cp2.blue;
+
+	cp1 = src[RIDX(i, j, dim)];
+        cp2 = src[RIDX(i, j+1, dim)];
+
+	/* add i,j twice */
+        redSum+= (int)(cp1.red *2);
+        greenSum +=(int)(cp1.green *2);
+        blueSum+= (int)(cp1.blue *2);
+
+        redSum+= (int)cp2.red;
+        greenSum +=(int)cp2.green;
+        blueSum+= (int)cp2.blue;
+
 	
+	cp1 = src[RIDX(i+1, j-1, dim)];
+        cp2 = src[RIDX(i+1, j, dim)];
+
+        redSum+= (int)cp1.red;
+        greenSum +=(int)cp1.green;
+        blueSum+= (int)cp1.blue;
+        redSum+= (int)cp2.red;
+        greenSum +=(int)cp2.green;
+        blueSum+= (int)cp2.blue;
 	
-	redSum += (int)(cp2.red);
-	blueSum += (int)(cp2.blue);
-	greenSum += (int)(cp2.green);
-	
-	
-	cp1 = src[RIDX(i-1, j+1, dim)];
-	cp2 = src[RIDX(i, j-1, dim)];
-	redSum += (int)(cp1.red);
-	blueSum += (int)(cp1.blue);
-	greenSum += (int)(cp1.green );
-	
-	
-	redSum += (int)(cp2.red);
-	blueSum += (int)(cp2.blue);
-	greenSum += (int)(cp2.green);
-	
-	 
-	cp1 = src[RIDX(i, j+1, dim)];
-	cp2 = src[RIDX(i+1, j-1, dim)];
-	redSum += (int)(cp1.red);
-	blueSum += (int)(cp1.blue);
-	greenSum += (int)(cp1.green);
-	
-	redSum += (int)(cp2.red);
-	blueSum += (int)(cp2.blue);
-	greenSum += (int)(cp2.green);
-		
-	
-	cp2 = src[RIDX(i+1, j, dim)];
-	redSum += (int)(cp2.red);
-	blueSum += (int) (cp2.blue);
-	greenSum +=(int)(cp2.green);
-  
-	
-	
+	cp1 = src[RIDX(i+1, j+1, dim)];
+
+	redSum+= (int)cp1.red;
+        greenSum +=(int)cp1.green;
+        blueSum+= (int)cp1.blue;
+
+       
+	 	
 	result.red = (unsigned char) (redSum/10);
 	result.blue = (unsigned char) (blueSum /10);
 	result.green = (unsigned char) (greenSum /10);
