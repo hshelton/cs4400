@@ -113,6 +113,49 @@ void test1_rotate(int dim, pixel *src, pixel *dst)
       dst[RIDX(j, dim-1-i, dim)] = src[RIDX(i, j, dim)];
 }
 
+char test2_rotate_descr[] = "test2_rotate: 4 way unrolling";
+void test2_rotate(int dim, pixel *src, pixel *dst) 
+{
+   int i, j, k, k2, l, pos,  si;
+
+  int limit = dim -3;
+/* perform 8 way loop unrolling and create local varables to reduce loads */
+  for (i = 0; i < limit; i+=4)
+    {
+        for (j = 0;j < dim; j++)
+        {
+        
+                    k =i;
+        l= dim -1 -i;
+              pos =(j * dim) + l;
+        si= (k * dim) + j;
+        
+        dst[pos--] =src[si];
+        
+        
+        si +=dim;
+    
+        dst[pos--] = src[si];
+        
+        
+        si += dim;
+        dst[pos--] = src[si];
+             
+        
+        si += dim;
+        dst[pos--] = src[si];
+             
+             
+     
+  
+      }
+
+  }
+  
+  
+}
+
+
 
 /*********************************************************************
  * register_rotate_functions - Register all of your different versions
@@ -127,6 +170,7 @@ void register_rotate_functions()
   add_rotate_function(&naive_rotate, naive_rotate_descr);   
   add_rotate_function(&rotate, rotate_descr);   
   add_rotate_function(&test1_rotate, test1_rotate_descr);  
+  add_rotate_function(&test2_rotate, test2_rotate_descr);
   /* ... Register additional test functions here */
 }
 
