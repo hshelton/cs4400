@@ -46,36 +46,50 @@ char rotate_descr[] = "Hayden's Optimized rotate";
  * result in destination image dst. dim is the dimension of the image */
 void rotate(int dim, pixel *src, pixel *dst) 
 {
-  int i, j, k, l, d, j2;
+  int i, j, k, k2, l, pos,  si;
 
   int limit = dim -7;
 /* perform 8 way loop unrolling and create local varables to reduce loads */
   for (i = 0; i < limit; i+=8)
     {
-		    for (j = 0; j < dim; j++)
+		    for (j = 0;j < dim; j++)
 		    {
-				k = i;
-				j2 = j;
+				
+		                k =i;
 				l= dim -1 -i;
-				d = dim;
+			        pos =(j * dim) + l;
+				si= (k * dim) + j;
 				
-				dst[RIDX(j2, l, dim)] =src[RIDX(k, j, d)];
-				k++;
-				dst[RIDX(j2, l-1, dim)] = src[RIDX(k, j, d)];
-				k++;
-				dst[RIDX(j2, l-2, dim)] = src[RIDX(k, j, d)];
-				k++;
-				dst[RIDX(j2, l-3, dim)] = src[RIDX(k, j, d)];
-				k++;
-				dst[RIDX(j2, l-4, dim)] = src[RIDX(k, j, d)];
+				dst[pos--] =src[si];
 				
-	
-				k++;
-				dst[RIDX(j2, l-5, dim)] = src[RIDX(k, j, d)];
-				k++;
-				dst[RIDX(j2, l-6, dim)] = src[RIDX(k, j, d)];
-				k++;
-				dst[RIDX(j2, l-7, dim)] = src[RIDX(k, j, d)];
+				
+				si +=dim;
+		
+				dst[pos--] = src[si];
+				
+				
+				si += dim;
+				dst[pos--] = src[si];
+			       
+				
+				si += dim;
+				dst[pos--] = src[si];
+			       
+			       
+				si += dim;
+				dst[pos--] = src[si];
+				
+   			        
+				si += dim;
+				dst[pos--] = src[si];
+				
+				si += dim;
+				
+				dst[pos--] = src[si];
+			        
+				
+				si += dim;
+				dst[pos] = src[si];
 	
 			}
 
@@ -193,6 +207,7 @@ static pixel avg(int dim, int i, int j, pixel *src)
     }
   
   assign_sum_to_pixel(&current_pixel, sum);
+  
   return current_pixel;
 }
 static pixel check_average(int dim, int i, int j, pixel *src) {
@@ -225,7 +240,7 @@ static pixel check_average(int dim, int i, int j, pixel *src) {
   result.red = (unsigned char) (sum0/num);
   result.green = (unsigned char) (sum1/num);
   result.blue = (unsigned char) (sum2/num);
- 
+  
   return result;
 }
 /* 
@@ -237,79 +252,72 @@ static pixel avg2(int dim, int i, int j, pixel *src)
   pixel cp1;
   pixel cp2;
   pixel result;
-  int redSum, greenSum, blueSum;
+  int redSum, greenSum, blueSum, num;
   
   redSum = greenSum = blueSum = 0;
-
+  
 	cp1 = src[RIDX(i, j, dim)];
-
 	cp2 = src[RIDX(i+1, j+1, dim)];
 	/* add the double weighted i, j */
-	redSum += (int)cp1.red;
+	redSum += (int)(cp1.red * 2);
 
-	blueSum += (int)cp1.blue;
+	blueSum += (int)(cp1.blue *2);
 	
-	greenSum += (int)cp1.green;
-
-	redSum += (int)cp1.red;
-
-	blueSum += (int)cp1.blue;
-	
-	greenSum += (int)cp1.green;
+	greenSum += (int)(cp1.green *2);
+    
+       
 	
 	/* add the other 8 in manually */
-	redSum += (int)cp2.red;
-	blueSum += (int)cp2.blue;
-	greenSum += (int)cp2.green;
+	redSum += (int)(cp2.red);
+	blueSum += (int)(cp2.blue);
+	greenSum += (int)(cp2.green);
 	
 	cp1 = src[RIDX(i-1, j-1, dim)];
 	cp2 = src[RIDX(i-1, j, dim)];
 	
-	redSum += (int)cp1.red;
-	blueSum += (int)cp1.blue;
-	greenSum += (int)cp1.green;
+	redSum += (int)(cp1.red);
+	blueSum += (int)(cp1.blue);
+	greenSum += (int)(cp1.green);
 	
-	redSum += (int)cp2.red;
-	blueSum += (int)cp2.blue;
-	greenSum += (int)cp2.green;
+	
+	redSum += (int)(cp2.red);
+	blueSum += (int)(cp2.blue);
+	greenSum += (int)(cp2.green);
+	
 	
 	cp1 = src[RIDX(i-1, j+1, dim)];
 	cp2 = src[RIDX(i, j-1, dim)];
-	redSum += (int)cp1.red;
-	blueSum += (int)cp1.blue;
-	greenSum += (int)cp1.green;
+	redSum += (int)(cp1.red);
+	blueSum += (int)(cp1.blue);
+	greenSum += (int)(cp1.green );
 	
-	redSum += (int)cp2.red;
-	blueSum += (int)cp2.blue;
-	greenSum += (int)cp2.green;
 	
+	redSum += (int)(cp2.red);
+	blueSum += (int)(cp2.blue);
+	greenSum += (int)(cp2.green);
+	
+	 
 	cp1 = src[RIDX(i, j+1, dim)];
 	cp2 = src[RIDX(i+1, j-1, dim)];
-	redSum += (int)cp1.red;
-	blueSum += (int)cp1.blue;
-	greenSum += (int)cp1.green;
+	redSum += (int)(cp1.red);
+	blueSum += (int)(cp1.blue);
+	greenSum += (int)(cp1.green);
 	
-	redSum += (int)cp2.red;
-	blueSum += (int)cp2.blue;
-	greenSum += (int)cp2.green;
+	redSum += (int)(cp2.red);
+	blueSum += (int)(cp2.blue);
+	greenSum += (int)(cp2.green);
 		
-
+	
 	cp2 = src[RIDX(i+1, j, dim)];
-	redSum += (int)cp1.red;
-	blueSum += (int) cp1.blue;
-	greenSum +=(int)cp1.green;
+	redSum += (int)(cp2.red);
+	blueSum += (int) (cp2.blue);
+	greenSum +=(int)(cp2.green);
+  
 	
-	redSum += (int) cp2.red;
-	blueSum += (int)cp2.blue;
-	greenSum += (int) cp2.green;
 	
-	redSum = (unsigned char) (redSum / 10);
-	blueSum = (unsigned char) (blueSum /10);
-	greenSum = (unsigned char) (greenSum /10);
-	
-	result.red = redSum;
-	result.blue =  blueSum;
-	result.green =  greenSum;
+	result.red = (unsigned char) (redSum/10);
+	result.blue = (unsigned char) (blueSum /10);
+	result.green = (unsigned char) (greenSum /10);
 	
 	return result;
   
@@ -343,8 +351,8 @@ void smooth(int dim, pixel *src, pixel *dst)
 {
 	
   int i, j;
-   handle smoothing of edge squares as a special case 
-  top row 
+   // smoothing of edge squares as a special case 
+  // row 
   for(i = 0; i < dim ; i++)
   {
 	  dst[RIDX(0, i, dim)] = avg(dim, 0, i, src);
@@ -369,10 +377,10 @@ void smooth(int dim, pixel *src, pixel *dst)
 	
   }
   
-  for (i = 1; i < dim -1 ; i++)
-    for (j = 1; j < dim -1; j++)
+  for (i = 1; i < dim-1  ; i++)
+    for (j = 1; j < dim-1 ; j++)
     {
-      dst[RIDX(i, j, dim)] = avg(dim, i, j, src);
+      dst[RIDX(i, j, dim)] = avg2(dim, i, j, src);
       
   }
   
