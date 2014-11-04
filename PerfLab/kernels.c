@@ -258,7 +258,7 @@ static pixel avg2(int dim, int i, int j, pixel *src)
   pixel cp1;
   pixel cp2;
   pixel result;
-  int redSum, greenSum, blueSum, num;
+  int redSum, greenSum, blueSum;
   
   redSum = greenSum = blueSum = 0;
         
@@ -377,15 +377,20 @@ void smooth(int dim, pixel *src, pixel *dst)
   }
 
 
+	
   for (i = 1; i < k  ; i++)
      {   
 		idim = i *dim;
     for (j = 1; j < k ; j++)
     {
-		
+	
       dst[idim + j] = avg2(dim, i, j, src);
+   
+
 
   }
+
+	
 }
 
 
