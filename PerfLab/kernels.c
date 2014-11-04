@@ -75,7 +75,7 @@ void test_rotate1(int dim, pixel *src, pixel *dst)
  * rotate - Your current working version of rotate
  * IMPORTANT: This is the version you will be graded on
  */
-char rotate_descr[] = "4 way unrolling and reduced calculations";
+char rotate_descr[] = " Hayden's optimized rotate";
 
 /* Computes the result of rotating the image src by 90 deg and stores the
  * result in destination image dst. dim is the dimension of the image */
@@ -85,7 +85,7 @@ void rotate(int dim, pixel *src, pixel *dst)
 
   int limit = dim -7;
   dimM = dim -1;
-/* perform 4 way loop unrolling, reduced loads, reduced calculations */
+/* perform 8 way loop unrolling, reduced loads, reduced calculations */
   for (i = 0; i < limit; i+=8)
     {
 		l= dimM -i;
@@ -348,7 +348,7 @@ char smooth_descr[] = "Hayden's Optimized smooth";
 void smooth(int dim, pixel *src, pixel *dst) 
 {
 	
-  int i, j, k;
+  int i, j, k, idim, jj;
   k = dim-1;
    // smoothing of edge squares as a special case 
   // row 
@@ -363,7 +363,7 @@ void smooth(int dim, pixel *src, pixel *dst)
 	  dst[RIDX(i, 0, dim)] = avg(dim, i, 0, src);
   }
   
-     /* last colum */
+     /* last column */
   for(i = 0; i < dim ; i++)
   {
 	  dst[RIDX(i, dim-1, dim)] = avg(dim, i, dim-1, src);
@@ -375,19 +375,19 @@ void smooth(int dim, pixel *src, pixel *dst)
 	  dst[RIDX(dim-1, i, dim)] = avg(dim, dim-1, i, src);
 	
   }
-  
+
+
   for (i = 1; i < k  ; i++)
+     {   
+		idim = i *dim;
     for (j = 1; j < k ; j++)
     {
-      dst[RIDX(i, j, dim)] = avg2(dim, i, j, src);
-      
+		
+      dst[idim + j] = avg2(dim, i, j, src);
+
   }
-  
-   // int i, j;
-  
- // for (i = 0; i < dim; i++)
-  //  for (j = 0; j < dim; j++)
-    //  dst[RIDX(i, j, dim)] = check_average(dim, i, j, src);
+}
+
 
 }
 
