@@ -392,7 +392,8 @@ char smooth_descr[] = "Hayden's Optimized smooth";
 void smooth(int dim, pixel *src, pixel *dst) 
 {
 	
-  int i, j;
+  int i, j, k;
+  k = dim-1;
    // smoothing of edge squares as a special case 
   // row 
   for(i = 0; i < dim ; i++)
@@ -419,8 +420,8 @@ void smooth(int dim, pixel *src, pixel *dst)
 	
   }
   
-  for (i = 1; i < dim-1  ; i++)
-    for (j = 1; j < dim-1 ; j++)
+  for (i = 1; i < k  ; i++)
+    for (j = 1; j < k ; j++)
     {
       dst[RIDX(i, j, dim)] = avg2(dim, i, j, src);
       
