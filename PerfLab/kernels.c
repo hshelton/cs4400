@@ -36,6 +36,41 @@ void naive_rotate(int dim, pixel *src, pixel *dst)
       dst[RIDX(j, dim-1-i, dim)] = src[RIDX(i, j, dim)];
 }
 
+
+ char test_rotate1_descr[] = "test_rotate1 - 4way inner unrolling";
+void test_rotate1(int dim, pixel *src, pixel *dst) 
+{
+     int i, j, l, jj, idim, jdim;
+
+  int limit = dim -3;
+ 
+/* perform 4 way loop unrolling (inner) and reduced calculations */
+  for (i = 0; i < dim; i++)
+    {
+		l= dim -1 -i;
+		idim = i*dim;
+		for (j = 0; j < limit; j+=4)
+		{
+			jj=j;
+			dst[(jj*dim +l)] = src[(idim + jj)];
+			jj++;
+			dst[(jj*dim +l)] = src[(idim + jj)];
+			jj++;
+			dst[(jj*dim +l)] = src[(idim + jj)];
+			jj++;
+			dst[(jj*dim +l)] = src[(idim + jj)];
+		
+
+		}
+		
+
+      }
+	
+  
+}
+
+
+
 /* 
  * rotate - Your current working version of rotate
  * IMPORTANT: This is the version you will be graded on
@@ -44,108 +79,22 @@ char rotate_descr[] = "4 way unrolling and reduced calculations";
 
 /* Computes the result of rotating the image src by 90 deg and stores the
  * result in destination image dst. dim is the dimension of the image */
-void test2_rotate(int dim, pixel *src, pixel *dst) 
-{
-  int i, j, k, k2, l, pos,  si;
-
-  int limit = dim -7;
-/* perform 8 way loop unrolling and create local varables to reduce loads */
-  for (i = 0; i < limit; i+=8)
-    {
-		    for (j = 0;j < dim; j++)
-		    {
-				
-		                k =i;
-				l= dim -1 -i;
-			        pos =(j * dim) + l;
-				si= (k * dim) + j;
-				
-				dst[pos--] =src[si];
-				
-				
-				si +=dim;
-		
-				dst[pos--] = src[si];
-				
-				
-				si += dim;
-				dst[pos--] = src[si];
-			       
-				
-				si += dim;
-				dst[pos--] = src[si];
-			       
-			       
-				si += dim;
-				dst[pos--] = src[si];
-				
-   			        
-				si += dim;
-				dst[pos--] = src[si];
-				
-				si += dim;
-				
-				dst[pos--] = src[si];
-			        
-				
-				si += dim;
-				dst[pos] = src[si];
-	
-			}
-
-	}
-	
-	
-	
-  
-}
-
-/* 
- *  
- */
-char test1_rotate_descr[] = "test1_rotate: test 4way unroll w/  i & j swapped";
-void test1_rotate(int dim, pixel *src, pixel *dst) 
-{
-
-  int i, j, k, k2, l, pos,  si;
-
-  int limit = dim -3;
-  /* perform 4 way loop unrolling and reduced calculations */
-
-      for (j = 0;j < dim; j++)
-	{
-	for(i =0; i <limit; i+=4)
-        {
-          l= dim -1 -i;
-          pos =(i * dim) + l;
-          si= (j * dim) + i;
-          dst[pos--] =src[si];
-          si +=dim;
-          dst[pos--] = src[si];
-          si += dim;
-          dst[pos--] = src[si];
-          si += dim;
-          dst[pos--] = src[si];
-        }
-    }
-
-
-}
-
-char test2_rotate_descr[] = "test2_rotate: 8 way unrolling";
 void rotate(int dim, pixel *src, pixel *dst) 
 {
-   int i, j, k, k2, l, pos,  si;
+   int i, j, l, pos,  si, idim, dimM;
 
-  int limit = dim -3;
-/* perform 4 way loop unrolling and reduced calculations */
-  for (i = 0; i < limit; i+=4)
+  int limit = dim -7;
+  dimM = dim -1;
+/* perform 4 way loop unrolling, reduced loads, reduced calculations */
+  for (i = 0; i < limit; i+=8)
     {
+		l= dimM -i;
+		idim = i * dim;
         for (j = 0;j < dim; j++)
-        {              
-        l= dim -1 -i;
+        {     
+		si= idim + j;         
         pos =(j * dim) + l;
-        si= (i * dim) + j;
+	
         dst[pos--] =src[si];
         si +=dim;
         dst[pos--] = src[si];
@@ -153,7 +102,14 @@ void rotate(int dim, pixel *src, pixel *dst)
         dst[pos--] = src[si];
         si += dim;
         dst[pos--] = src[si];
-            
+        si += dim;
+        dst[pos--] = src[si];
+        si += dim;
+        dst[pos--] = src[si];
+        si += dim;
+        dst[pos--] = src[si];
+        si += dim;
+        dst[pos--] = src[si];
       }
 
   }
@@ -175,8 +131,8 @@ void register_rotate_functions()
 {
   add_rotate_function(&naive_rotate, naive_rotate_descr);   
   add_rotate_function(&rotate, rotate_descr);   
-  add_rotate_function(&test1_rotate, test1_rotate_descr);  
-  add_rotate_function(&test2_rotate, test2_rotate_descr);
+  add_rotate_function(&test_rotate1, test_rotate1_descr);  
+;
   /* ... Register additional test functions here */
 }
 
