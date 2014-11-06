@@ -40,7 +40,7 @@ void naive_rotate(int dim, pixel *src, pixel *dst)
  char test_rotate1_descr[] = "test_rotate1 - 4way inner unrolling";
 void test_rotate1(int dim, pixel *src, pixel *dst) 
 {
-     int i, j, l, jj, idim, jdim;
+     int i, j, l, jj, idim;
 
   int limit = dim -3;
  
@@ -81,7 +81,7 @@ char rotate_descr[] = " Hayden's optimized rotate";
  * result in destination image dst. dim is the dimension of the image */
 void rotate(int dim, pixel *src, pixel *dst) 
 {
-   int i, j, l, pos,  si, idim;
+   int i, j, l, pos,  si;
 
   int limit = dim -7;
 
@@ -89,27 +89,27 @@ void rotate(int dim, pixel *src, pixel *dst)
   for (i = 0; i < limit; i+=8)
     {
 		l= dim -1 -i;
-		idim = i * dim;
+
         for (j = 0;j < dim; j++)
         {     
-		si= idim + j;         
+		si= i * dim + j;         
         pos =(j * dim) + l;
 	
         dst[pos--] =src[si];
-        si +=dim;
-        dst[pos--] = src[si];
-        si += dim;
-        dst[pos--] = src[si];
-        si += dim;
-        dst[pos--] = src[si];
-        si += dim;
-        dst[pos--] = src[si];
-        si += dim;
-        dst[pos--] = src[si];
-        si += dim;
-        dst[pos--] = src[si];
-        si += dim;
-        dst[pos--] = src[si];
+
+        dst[pos--] = src[si + dim ];
+   
+        dst[pos--] = src[si + dim *2];
+ 
+        dst[pos--] = src[si + dim *3];
+      
+        dst[pos--] = src[si + dim *4];
+    
+        dst[pos--] = src[si + dim *5];
+    
+        dst[pos--] = src[si + dim *6];
+
+        dst[pos--] = src[si + dim *7];
       }
 
   }
@@ -288,7 +288,7 @@ static pixel avg3(int dim, int i, int j, pixel * src)
 
       redSum += src[pos].red;
       greenSum += src[pos].green;
-      blueSum += src[pos++].blue;
+      blueSum += src[pos].blue;
 
         
         /* row below */
@@ -302,13 +302,13 @@ static pixel avg3(int dim, int i, int j, pixel * src)
       blueSum += src[pos++].blue;
 
       redSum += src[pos].red;
-      	cp1.red = (unsigned char) (redSum/10);
+  
       greenSum += src[pos].green;
-	cp1.green = (unsigned char) (greenSum /10);
-      blueSum += src[pos++].blue;
 
+      blueSum += src[pos].blue;
 
-       
+    	cp1.red = (unsigned char) (redSum/10);
+       	cp1.green = (unsigned char) (greenSum /10);
 	 	      	cp1.blue = (unsigned char) (blueSum /10);
 
 
@@ -317,82 +317,7 @@ static pixel avg3(int dim, int i, int j, pixel * src)
 	return cp1;
   }
 
-/* 
- * avg - Returns averaged pixel value at (i,j) 
- */
-static pixel avg2(int dim, int i, int j, pixel *src) 
-{
-
-  pixel cp1;
-  pixel cp2;
-
-  int redSum, greenSum, blueSum;
-  
-  redSum = greenSum = blueSum = 0;
-        
-	cp1 = src[(i-1)*dim + (j-1)];
-	cp2 = src[(i-1)*dim+ j];
-	
-	redSum+= cp1.red;
-	greenSum +=(int)cp1.green;
-	blueSum+= (int)cp1.blue;
-	redSum+= (int)cp2.red;
-        greenSum +=(int)cp2.green;
-        blueSum+= (int)cp2.blue;
-
-        cp1 = src[(i-1)*dim+ j+1];
-        cp2 = src[i *dim + j-1];
-
-        redSum+= (int)cp1.red;
-        greenSum +=(int)cp1.green;
-        blueSum+= (int)cp1.blue;
-        redSum+= (int)cp2.red;
-        greenSum +=(int)cp2.green;
-        blueSum+= (int)cp2.blue;
-
-	cp1 = src[i * dim + j];
-        cp2 =  src[i *dim + j+1];
-
-	/* add i,j twice */
-        redSum+= (int)(cp1.red *2);
-        greenSum +=(int)(cp1.green *2);
-        blueSum+= (int)(cp1.blue *2);
-
-        redSum+= (int)cp2.red;
-        greenSum +=(int)cp2.green;
-        blueSum+= (int)cp2.blue;
-
-	
-	cp1 = src[(i+1) * dim + (j-1)];
-        cp2 = src[(i+1)*dim +j];
-
-        redSum+= (int)cp1.red;
-        greenSum +=(int)cp1.green;
-        blueSum+= (int)cp1.blue;
-        redSum+= (int)cp2.red;
-        greenSum +=(int)cp2.green;
-        blueSum+= (int)cp2.blue;
-	
-	cp1 = src[(i+1) * dim +(j+1)];
-
-	redSum+= (int)cp1.red;
-        greenSum +=(int)cp1.green;
-        blueSum+= (int)cp1.blue;
-
-       
-	 	
-	cp2.red = (unsigned char) (redSum/10);
-	cp2.blue = (unsigned char) (blueSum /10);
-	cp2.green = (unsigned char) (greenSum /10);
-	
-	return cp2;
-  
-  
-
-}
-
-
-/******************************************************
+/*
  * Your different versions of the smooth kernel go here
  ******************************************************/
 
@@ -416,46 +341,48 @@ void naive_smooth(int dim, pixel *src, pixel *dst)
 char smooth_descr[] = "Hayden's Optimized smooth";
 void smooth(int dim, pixel *src, pixel *dst) 
 {
-  int i, j, k, idim, jj;
+  int i, j, k, idim;
   k = dim-1;
    // smoothing of edge squares as a special case 
-  // row 
-  for(i = 0; i < dim ; i++)
-  {
-	  dst[RIDX(0, i, dim)] = avg(dim, 0, i, src);
-  }
- 
-    /* first column */
-  for(i = 0; i < dim ; i++)
-  {
-	  dst[RIDX(i, 0, dim)] = avg(dim, i, 0, src);
-  }
-     /* last column */
-  for(i = 0; i < dim ; i++)
-  {
-	  dst[RIDX(i, dim-1, dim)] = avg(dim, i, dim-1, src);
-  }
-  //bottom row
-    for(i = 0; i < dim ; i++)
-  {
-	  dst[RIDX(dim-1, i, dim)] = avg(dim, dim-1, i, src);
-  }
-
-  for (i = 1; i < k  ; i++)
+  
+  
+      
+      /* this will take care of most entries */
+      
+        for (i = 1; i < k  ; i++)
      {   
 		idim = i *dim;
     for (j = 1; j < k ; j++)
     {
 	
-      dst[idim + j] = avg2(dim, i, j, src);
+      dst[idim + j] = avg3(dim, i, j, src);
 
   }
+}
+  
+  
+      /* first column first row*/
+  for(i = 0; i < dim ; i++)
+  {
+	  dst[RIDX(i, 0, dim)] = check_average(dim, i, 0, src);
+	   dst[RIDX(0, i, dim)] = check_average(dim, 0, i, src);
+  }
+
+ 
+
+     /* last column last row*/
+  for(i = 0; i < dim ; i++)
+  {
+	  dst[RIDX(i, k, dim)] = check_average(dim, i, k, src);
+	  	  dst[RIDX(k, i, dim)] = check_average(dim, k, i, src);
+  }
+
 
 	
 }
 
 
-}
+
 
 /*
  * smooth - another test
