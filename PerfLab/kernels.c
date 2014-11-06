@@ -249,61 +249,64 @@ static pixel check_average(int dim, int i, int j, pixel *src) {
   
   return result;
 }
-/* 
- * avg - Returns averaged pixel value at (i,j) 
- */
-static pixel avg2(int dim, int i, int j, pixel *src) 
-{
 
-  pixel cp1;
-  pixel cp2;
+static pixel avg3(int dim, int i, int j, pixel * src)
+{
+ pixel cp1;
+
   pixel result;
   int redSum, greenSum, blueSum;
   
-  redSum = greenSum = blueSum = 0;
+  redSum = greenSum = blueSum = 0; 
         
 	cp1 = src[RIDX(i-1, j-1, dim)];
-	cp2 = src[RIDX(i-1, j, dim)];
+	
 	
 	redSum+= (int)cp1.red;
 	greenSum +=(int)cp1.green;
 	blueSum+= (int)cp1.blue;
-	redSum+= (int)cp2.red;
-        greenSum +=(int)cp2.green;
-        blueSum+= (int)cp2.blue;
+
+
+	cp1 = src[RIDX(i-1, j, dim)];
+		redSum+= (int)cp1.red;
+        greenSum +=(int)cp1.green;
+        blueSum+= (int)cp1.blue;
 
         cp1 = src[RIDX(i-1, j+1, dim)];
-        cp2 = src[RIDX(i,j-1, dim)];
+      
 
         redSum+= (int)cp1.red;
         greenSum +=(int)cp1.green;
         blueSum+= (int)cp1.blue;
-        redSum+= (int)cp2.red;
-        greenSum +=(int)cp2.green;
-        blueSum+= (int)cp2.blue;
+		  cp1 = src[RIDX(i,j-1, dim)];
+        redSum+= (int)cp1.red;
+        greenSum +=(int)cp1.green;
+        blueSum+= (int)cp1.blue;
 
 	cp1 = src[RIDX(i, j, dim)];
-        cp2 = src[RIDX(i, j+1, dim)];
+
 
 	/* add i,j twice */
         redSum+= (int)(cp1.red *2);
         greenSum +=(int)(cp1.green *2);
         blueSum+= (int)(cp1.blue *2);
 
-        redSum+= (int)cp2.red;
-        greenSum +=(int)cp2.green;
-        blueSum+= (int)cp2.blue;
+		        cp1 = src[RIDX(i, j+1, dim)];
+        redSum+= (int)cp1.red;
+        greenSum +=(int)cp1.green;
+        blueSum+= (int)cp1.blue;
 
 	
 	cp1 = src[RIDX(i+1, j-1, dim)];
-        cp2 = src[RIDX(i+1, j, dim)];
+     
 
         redSum+= (int)cp1.red;
         greenSum +=(int)cp1.green;
         blueSum+= (int)cp1.blue;
-        redSum+= (int)cp2.red;
-        greenSum +=(int)cp2.green;
-        blueSum+= (int)cp2.blue;
+		   cp1 = src[RIDX(i+1, j, dim)];
+        redSum+= (int)cp1.red;
+        greenSum +=(int)cp1.green;
+        blueSum+= (int)cp1.blue;
 	
 	cp1 = src[RIDX(i+1, j+1, dim)];
 
@@ -318,6 +321,78 @@ static pixel avg2(int dim, int i, int j, pixel *src)
 	result.green = (unsigned char) (greenSum /10);
 	
 	return result;
+  }
+
+/* 
+ * avg - Returns averaged pixel value at (i,j) 
+ */
+static pixel avg2(int dim, int i, int j, pixel *src) 
+{
+
+  pixel cp1;
+  pixel cp2;
+
+  int redSum, greenSum, blueSum;
+  
+  redSum = greenSum = blueSum = 0;
+        
+	cp1 = src[(i-1)*dim + (j-1)];
+	cp2 = src[(i-1)*dim+ j];
+	
+	redSum+= cp1.red;
+	greenSum +=(int)cp1.green;
+	blueSum+= (int)cp1.blue;
+	redSum+= (int)cp2.red;
+        greenSum +=(int)cp2.green;
+        blueSum+= (int)cp2.blue;
+
+        cp1 = src[(i-1)*dim+ j+1];
+        cp2 = src[i *dim + j-1];
+
+        redSum+= (int)cp1.red;
+        greenSum +=(int)cp1.green;
+        blueSum+= (int)cp1.blue;
+        redSum+= (int)cp2.red;
+        greenSum +=(int)cp2.green;
+        blueSum+= (int)cp2.blue;
+
+	cp1 = src[i * dim + j];
+        cp2 =  src[i *dim + j+1];
+
+	/* add i,j twice */
+        redSum+= (int)(cp1.red *2);
+        greenSum +=(int)(cp1.green *2);
+        blueSum+= (int)(cp1.blue *2);
+
+        redSum+= (int)cp2.red;
+        greenSum +=(int)cp2.green;
+        blueSum+= (int)cp2.blue;
+
+	
+	cp1 = src[(i+1) * dim + (j-1)];
+        cp2 = src[(i+1)*dim +j];
+
+        redSum+= (int)cp1.red;
+        greenSum +=(int)cp1.green;
+        blueSum+= (int)cp1.blue;
+        redSum+= (int)cp2.red;
+        greenSum +=(int)cp2.green;
+        blueSum+= (int)cp2.blue;
+	
+	cp1 = src[(i+1) * dim +(j+1)];
+
+	redSum+= (int)cp1.red;
+        greenSum +=(int)cp1.green;
+        blueSum+= (int)cp1.blue;
+
+       
+	 	
+	cp2.red = (unsigned char) (redSum/10);
+	cp2.blue = (unsigned char) (blueSum /10);
+	cp2.green = (unsigned char) (greenSum /10);
+	
+	return cp2;
+  
   
 
 }
@@ -347,7 +422,6 @@ void naive_smooth(int dim, pixel *src, pixel *dst)
 char smooth_descr[] = "Hayden's Optimized smooth";
 void smooth(int dim, pixel *src, pixel *dst) 
 {
-	
   int i, j, k, idim, jj;
   k = dim-1;
    // smoothing of edge squares as a special case 
@@ -356,28 +430,23 @@ void smooth(int dim, pixel *src, pixel *dst)
   {
 	  dst[RIDX(0, i, dim)] = avg(dim, 0, i, src);
   }
-  
+ 
     /* first column */
   for(i = 0; i < dim ; i++)
   {
 	  dst[RIDX(i, 0, dim)] = avg(dim, i, 0, src);
   }
-  
      /* last column */
   for(i = 0; i < dim ; i++)
   {
 	  dst[RIDX(i, dim-1, dim)] = avg(dim, i, dim-1, src);
   }
-  
   //bottom row
     for(i = 0; i < dim ; i++)
   {
 	  dst[RIDX(dim-1, i, dim)] = avg(dim, dim-1, i, src);
-	
   }
 
-
-	
   for (i = 1; i < k  ; i++)
      {   
 		idim = i *dim;
@@ -385,8 +454,6 @@ void smooth(int dim, pixel *src, pixel *dst)
     {
 	
       dst[idim + j] = avg2(dim, i, j, src);
-   
-
 
   }
 
@@ -396,6 +463,60 @@ void smooth(int dim, pixel *src, pixel *dst)
 
 }
 
+/*
+ * smooth - another test
+ * IMPORTANT: This is the version you will be graded on
+ */
+char smooth3_descr[] = "using av3";
+void smooth3(int dim, pixel *src, pixel *dst) 
+{
+  int i, j, k, idim;
+  k = dim-1;
+   // smoothing of edge squares as a special case 
+  
+  
+      
+      /* this will take care of most entries */
+      
+        for (i = 1; i < k  ; i++)
+     {   
+		idim = i *dim;
+    for (j = 1; j < k ; j++)
+    {
+	
+      dst[idim + j] = avg3(dim, i, j, src);
+
+  }
+}
+  
+  
+      /* first column */
+  for(i = 0; i < dim ; i++)
+  {
+	  dst[RIDX(i, 0, dim)] = check_average(dim, i, 0, src);
+  }
+  // first row 
+  for(i = 0; i < dim ; i++)
+  {
+	  dst[RIDX(0, i, dim)] = check_average(dim, 0, i, src);
+  }
+ 
+
+     /* last column */
+  for(i = 0; i < dim ; i++)
+  {
+	  dst[RIDX(i, k, dim)] = check_average(dim, i, k, src);
+  }
+  //bottom row
+    for(i = 0; i < dim ; i++)
+  {
+	  dst[RIDX(k, i, dim)] = check_average(dim, k, i, src);
+  }
+
+
+
+	
+}
 
 /********************************************************************* 
  * register_smooth_functions - Register all of your different versions
@@ -408,5 +529,6 @@ void smooth(int dim, pixel *src, pixel *dst)
 void register_smooth_functions() {
   add_smooth_function(&smooth, smooth_descr);
   add_smooth_function(&naive_smooth, naive_smooth_descr);
+  add_smooth_function(&smooth3, smooth3_descr);
   /* ... Register additional test functions here */
 }
