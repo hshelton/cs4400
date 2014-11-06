@@ -81,14 +81,14 @@ char rotate_descr[] = " Hayden's optimized rotate";
  * result in destination image dst. dim is the dimension of the image */
 void rotate(int dim, pixel *src, pixel *dst) 
 {
-   int i, j, l, pos,  si, idim, dimM;
+   int i, j, l, pos,  si, idim;
 
   int limit = dim -7;
-  dimM = dim -1;
+
 /* perform 8 way loop unrolling, reduced loads, reduced calculations */
   for (i = 0; i < limit; i+=8)
     {
-		l= dimM -i;
+		l= dim -1 -i;
 		idim = i * dim;
         for (j = 0;j < dim; j++)
         {     
@@ -254,73 +254,67 @@ static pixel avg3(int dim, int i, int j, pixel * src)
 {
  pixel cp1;
 
-  pixel result;
-  int redSum, greenSum, blueSum;
+ 
+  int redSum, greenSum, blueSum, pos, upleft;
   
-  redSum = greenSum = blueSum = 0; 
-        
-	cp1 = src[RIDX(i-1, j-1, dim)];
-	
-	
-	redSum+= (int)cp1.red;
-	greenSum +=(int)cp1.green;
-	blueSum+= (int)cp1.blue;
+	redSum = greenSum = blueSum = 0; 
+	upleft= RIDX((i-1),(j-1),dim);
+	pos = upleft;
 
+ /* row above */
+      redSum += src[pos].red;
+      greenSum += src[pos].green;
+      blueSum += src[pos++].blue;
 
-	cp1 = src[RIDX(i-1, j, dim)];
-		redSum+= (int)cp1.red;
-        greenSum +=(int)cp1.green;
-        blueSum+= (int)cp1.blue;
-
-        cp1 = src[RIDX(i-1, j+1, dim)];
+      redSum += src[pos].red;
+      greenSum += src[pos].green;
+      blueSum += src[pos++].blue;
       
+      redSum += src[pos].red;
+      greenSum += src[pos].green;
+      blueSum += src[pos].blue;
 
-        redSum+= (int)cp1.red;
-        greenSum +=(int)cp1.green;
-        blueSum+= (int)cp1.blue;
-		  cp1 = src[RIDX(i,j-1, dim)];
-        redSum+= (int)cp1.red;
-        greenSum +=(int)cp1.green;
-        blueSum+= (int)cp1.blue;
+        
+      /* same row */
+      pos = upleft + dim;
+      redSum += src[pos].red;
+      greenSum += src[pos].green;
+      blueSum += src[pos++].blue;
 
-	cp1 = src[RIDX(i, j, dim)];
+		/* add i,j twice */
+      redSum += src[pos].red *2;
+      greenSum += src[pos].green *2;
+      blueSum += src[pos++].blue *2;
 
+      redSum += src[pos].red;
+      greenSum += src[pos].green;
+      blueSum += src[pos++].blue;
 
-	/* add i,j twice */
-        redSum+= (int)(cp1.red *2);
-        greenSum +=(int)(cp1.green *2);
-        blueSum+= (int)(cp1.blue *2);
+        
+        /* row below */
+        pos= upleft + dim*2;
+      redSum += src[pos].red;
+      greenSum += src[pos].green;
+      blueSum += src[pos++].blue;
 
-		        cp1 = src[RIDX(i, j+1, dim)];
-        redSum+= (int)cp1.red;
-        greenSum +=(int)cp1.green;
-        blueSum+= (int)cp1.blue;
+      redSum += src[pos].red;
+      greenSum += src[pos].green;
+      blueSum += src[pos++].blue;
 
-	
-	cp1 = src[RIDX(i+1, j-1, dim)];
-     
+      redSum += src[pos].red;
+      	cp1.red = (unsigned char) (redSum/10);
+      greenSum += src[pos].green;
+	cp1.green = (unsigned char) (greenSum /10);
+      blueSum += src[pos++].blue;
 
-        redSum+= (int)cp1.red;
-        greenSum +=(int)cp1.green;
-        blueSum+= (int)cp1.blue;
-		   cp1 = src[RIDX(i+1, j, dim)];
-        redSum+= (int)cp1.red;
-        greenSum +=(int)cp1.green;
-        blueSum+= (int)cp1.blue;
-	
-	cp1 = src[RIDX(i+1, j+1, dim)];
-
-	redSum+= (int)cp1.red;
-        greenSum +=(int)cp1.green;
-        blueSum+= (int)cp1.blue;
 
        
-	 	
-	result.red = (unsigned char) (redSum/10);
-	result.blue = (unsigned char) (blueSum /10);
-	result.green = (unsigned char) (greenSum /10);
+	 	      	cp1.blue = (unsigned char) (blueSum /10);
+
+
+
 	
-	return result;
+	return cp1;
   }
 
 /* 
