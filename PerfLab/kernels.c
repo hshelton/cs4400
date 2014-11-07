@@ -272,20 +272,7 @@ static pixel avg3(int dim, int i, int j, pixel * src)
 
     redSum = greenSum = blueSum = 0;
     upleft= RIDX((i-1),(j-1),dim);
-    pos = pos2 = upleft;
 
-    /* row above */
-    redSum += (int) src[pos].red;
-    greenSum += (int) src[pos2++].green;
-    blueSum += (int) src[pos++].blue;
-
-    redSum += (int) src[pos2++].red;
-    greenSum += (int) src[pos].green;
-    blueSum += (int)src[pos++].blue;
-
-    redSum += (int)src[pos2].red;
-    greenSum +=(int) src[pos2].green;
-    blueSum += (int)src[pos2].blue;
 
 
     /* same row */
@@ -302,6 +289,25 @@ static pixel avg3(int dim, int i, int j, pixel * src)
     redSum += (int)src[pos2].red;
     greenSum += (int)src[pos2].green;
     blueSum += (int)src[pos2].blue;
+
+
+
+
+    pos = pos2 = upleft;
+
+    /* row above */
+    redSum += (int) src[pos].red;
+    greenSum += (int) src[pos2++].green;
+    blueSum += (int) src[pos++].blue;
+
+    redSum += (int) src[pos2++].red;
+    greenSum += (int) src[pos].green;
+    blueSum += (int)src[pos++].blue;
+
+    redSum += (int)src[pos2].red;
+    greenSum +=(int) src[pos2].green;
+    blueSum += (int)src[pos2].blue;
+
 
 
     /* row below */
@@ -354,33 +360,234 @@ void naive_smooth(int dim, pixel *src, pixel *dst)
 char smooth_descr[] = "Hayden's Optimized smooth";
 void smooth(int dim, pixel *src, pixel *dst)
 {
-    int i, j, k, limit, inc;
+
+/* strategy was to reduce number of computations and method calls, ugly mess, but faster */
+    int i, j, k, limit;
     k = dim-1;
     limit= k-1;
+    pixel cp1;
 
     for (i = 1; i < k  ; i++)
     {
 
         /* line below is most of first column */
-        dst[i *dim] = check_average(dim, i, 0, src);
+
+        j =0;
+         int num = 0;
+    int ii, jj;
+    int sum0, sum1, sum2;
+    int top_left_i, top_left_j;
+    int bottom_right_i, bottom_right_j;
+
+    top_left_i = max(i-1, 0);
+    top_left_j = max(j-1, 0);
+    bottom_right_i = min(i+1, dim-1);
+    bottom_right_j = min(j+1, dim-1);
+
+    sum0 = sum1 = sum2 = 0;
+    for(ii=top_left_i; ii <= bottom_right_i; ii++)
+    {
+        for(jj=top_left_j; jj <= bottom_right_j; jj++)
+        {
+            num++;
+            sum0 += (int) src[RIDX(ii,jj,dim)].red;
+            sum1 += (int) src[RIDX(ii,jj,dim)].green;
+            sum2 += (int) src[RIDX(ii,jj,dim)].blue;
+        }
+    }
+    // average is weighted, add pixel value at (i,j) again
+    sum0 += (int) src[RIDX(i,j,dim)].red;
+    sum1 += (int) src[RIDX(i,j,dim)].green;
+    sum2 += (int) src[RIDX(i,j,dim)].blue;
+    num++;
+    cp1.red = (unsigned char) (sum0/num);
+    cp1.green = (unsigned char) (sum1/num);
+    cp1.blue = (unsigned char) (sum2/num);
+
+
+    dst[i *dim] = cp1;
+
+
+
 
          /*main part */
         for (j = 1; j < limit; j+=2)
         {
-            inc = j+1;
-            dst[i*dim +j] = avg3(dim, i, j, src);
 
-            dst[i*dim +inc] = avg3(dim, i, inc, src);
+
+             int redSum, greenSum, blueSum, pos, upleft, pos2;
+
+/* this disgusting mess replaces two function calls to get average */
+    redSum = greenSum = blueSum = 0;
+    upleft= RIDX((i-1),(j-1),dim);
+
+
+
+    /* same row */
+    pos = pos2 = upleft + dim;
+    redSum += (int)src[pos2++].red;
+    greenSum += (int)src[pos].green;
+    blueSum += (int)src[pos++].blue;
+
+    /* add i,j twice */
+    redSum += (int)src[pos2++].red *2;
+    greenSum += (int)src[pos].green *2;
+    blueSum += (int)src[pos].blue *2;
+    redSum += (int)src[pos2].red;
+    greenSum += (int)src[pos2].green;
+    blueSum += (int)src[pos2].blue;
+
+    pos = pos2 = upleft;
+    /* row above */
+    redSum += (int) src[pos].red;
+    greenSum += (int) src[pos2++].green;
+    blueSum += (int) src[pos++].blue;
+    redSum += (int) src[pos2++].red;
+    greenSum += (int) src[pos].green;
+    blueSum += (int)src[pos++].blue;
+    redSum += (int)src[pos2].red;
+    greenSum +=(int) src[pos2].green;
+    blueSum += (int)src[pos2].blue;
+
+    /* row below */
+    pos= pos2 = upleft + dim*2;
+    redSum += (int)src[pos].red;
+    greenSum += (int)src[pos2++].green;
+    blueSum += (int)src[pos++].blue;
+    redSum += (int)src[pos2].red;
+    greenSum += (int)src[pos2++].green;
+    blueSum += (int)src[pos].blue;
+    redSum += (int)src[pos2].red;
+    greenSum += (int)src[pos2].green;
+    blueSum += (int)src[pos2].blue;
+    cp1.red = (unsigned char) (redSum/10);
+    cp1.green = (unsigned char) (greenSum /10);
+    cp1.blue = (unsigned char) (blueSum /10);
+ dst[i*dim +j] = cp1;
+
+j++;
+redSum = greenSum = blueSum = 0;
+    upleft= RIDX((i-1),(j-1),dim);
+    /* same row */
+    pos = pos2 = upleft + dim;
+    redSum += (int)src[pos2++].red;
+    greenSum += (int)src[pos].green;
+    blueSum += (int)src[pos++].blue;
+    /* add i,j twice */
+    redSum += (int)src[pos2++].red *2;
+    greenSum += (int)src[pos].green *2;
+    blueSum += (int)src[pos].blue *2;
+    redSum += (int)src[pos2].red;
+    greenSum += (int)src[pos2].green;
+    blueSum += (int)src[pos2].blue;
+    pos = pos2 = upleft;
+    /* row above */
+    redSum += (int) src[pos].red;
+    greenSum += (int) src[pos2++].green;
+    blueSum += (int) src[pos++].blue;
+    redSum += (int) src[pos2++].red;
+    greenSum += (int) src[pos].green;
+    blueSum += (int)src[pos++].blue;
+    redSum += (int)src[pos2].red;
+    greenSum +=(int) src[pos2].green;
+    blueSum += (int)src[pos2].blue;
+
+    /* row below */
+    pos= pos2 = upleft + dim*2;
+    redSum += (int)src[pos].red;
+    greenSum += (int)src[pos2++].green;
+    blueSum += (int)src[pos++].blue;
+    redSum += (int)src[pos2].red;
+    greenSum += (int)src[pos2++].green;
+    blueSum += (int)src[pos].blue;
+    redSum += (int)src[pos2].red;
+    greenSum += (int)src[pos2].green;
+    blueSum += (int)src[pos2].blue;
+    cp1.red = (unsigned char) (redSum/10);
+    cp1.green = (unsigned char) (greenSum /10);
+    cp1.blue = (unsigned char) (blueSum /10);
+ dst[i*dim +j] = cp1;
+ j--;
 
         }
+
+
         /* most of last column */
-     dst[i *dim +k] = check_average(dim, i, k, src);
+
+
+     num = 0;
+
+
+    top_left_i = max(i-1, 0);
+    top_left_j = max(j-1, 0);
+    bottom_right_i = min(i+1, dim-1);
+    bottom_right_j = min(j+1, dim-1);
+
+    sum0 = sum1 = sum2 = 0;
+    for(ii=top_left_i; ii <= bottom_right_i; ii++)
+    {
+        for(jj=top_left_j; jj <= bottom_right_j; jj++)
+        {
+            num++;
+            sum0 += (int) src[RIDX(ii,jj,dim)].red;
+            sum1 += (int) src[RIDX(ii,jj,dim)].green;
+            sum2 += (int) src[RIDX(ii,jj,dim)].blue;
+        }
+    }
+    // average is weighted, add pixel value at (i,j) again
+    sum0 += (int) src[RIDX(i,j,dim)].red;
+    sum1 += (int) src[RIDX(i,j,dim)].green;
+    sum2 += (int) src[RIDX(i,j,dim)].blue;
+    num++;
+    cp1.red = (unsigned char) (sum0/num);
+    cp1.green = (unsigned char) (sum1/num);
+    cp1.blue = (unsigned char) (sum2/num);
+
+ dst[i *dim +k] = cp1;
+
+
     }
 
     /* first and last row */
     for(i = 0; i < dim ; i++)
     {
-           dst[i] = check_average(dim, 0, i, src);
+
+            int num = 0;
+    int ii, jj;
+    int sum0, sum1, sum2;
+    int top_left_i, top_left_j;
+    int bottom_right_i, bottom_right_j;
+    int j = i;
+    int i1 = 0;
+
+    top_left_i = max(i1-1, 0);
+    top_left_j = max(j-1, 0);
+    bottom_right_i = min(i1+1, dim-1);
+    bottom_right_j = min(j+1, dim-1);
+
+    sum0 = sum1 = sum2 = 0;
+    for(ii=top_left_i; ii <= bottom_right_i; ii++)
+    {
+        for(jj=top_left_j; jj <= bottom_right_j; jj++)
+        {
+            num++;
+            sum0 += (int) src[RIDX(ii,jj,dim)].red;
+            sum1 += (int) src[RIDX(ii,jj,dim)].green;
+            sum2 += (int) src[RIDX(ii,jj,dim)].blue;
+        }
+    }
+    // average is weighted, add pixel value at (i,j) again
+    sum0 += (int) src[j].red;
+    sum1 += (int) src[j].green;
+    sum2 += (int) src[j].blue;
+    num++;
+    cp1.red = (unsigned char) (sum0/num);
+    cp1.green = (unsigned char) (sum1/num);
+    cp1.blue = (unsigned char) (sum2/num);
+
+ dst[j] = cp1;
+
+
 
          dst[k*dim+i] = check_average(dim, k, i, src);
     }
