@@ -177,18 +177,59 @@ void eval(char *cmdline)
 	/* check for built in command, if found, execute immediately */
 	builtIn = builtin_cmd(arguments);
 	
-	int ok = sigemptyset(&signalSet); //try to initialize an empty signal set
-	if(ok !=0) 
-	{
-		unix_error("failed to initialize an empty signal set for this processs ");
-		return;	
-	}
 	
-	
+
 	//if it's not a built in command then we have more work to do
 	if(builtIn == 0)
 	{
+		int ok = sigemptyset(&signalSet); //try to initialize an empty signal set
+		if(ok !=0) 
+		{
+		unix_error("failed to initialize an empty signal set for this processs ");
+		return;	
+		}
+
+		//add SIGCHILD signal to the set
+		sigaddset(&signalSet, SIGCHLD);
+		sigprocmask(SIG_BLOCK, &signalSet, NULL); /* Block SIGCHILD */
 		
+		//fork a child process
+		if((processID = fork() ==0))
+
+		{
+			sigprocmask(SIG_UNBLOCK, &signalSet, NULL); /*unblock SIGCHILD */
+				
+		
+			if(execvp(arguments[0], arguments) < 0)
+			{ 
+			printf("%s: Command not found. (%d)\n", arguments[0], processID);
+			exit(0);
+			}
+		 
+		}		
+		
+
+
+
+		//if an error occurs while adding the job, then maybe we should kill the process
+		// that we just started
+		if(background)
+		{
+			int added = addjob(jobs, processID, BG, arguments);
+			if(!added)
+				unix_error("eval: addjob error");
+			sigprocmask(SIG_UNBLOCK, &signalSet, NULL);
+		}
+
+		else
+		{
+			int added = addjob(jobs, processID, FG, arguments);
+			if(!added)
+				unix_error("eval: addjob error");
+			sigprocmask(SIG_UNBLOCK, &signalSet, NULL);
+			waitfg(processID);
+
+		}
 		
 		
 		
@@ -328,13 +369,14 @@ void do_bgfg(char **argv)
 		}
 
 		//at this point we have a job to send SIGCONT to
-			if(kill(-(job.pid), SIGCONT) < 0) unix_error("do_bgfg: Kill error");
+			if(kill(-(job->pid), SIGCONT) < 0) unix_error("do_bgfg: Kill error");
 	
 
 			 // determine if they want a background or foreground job
 			if(strcmp (argv[0] , "bg") ==0)
 			{
 				job->state = BG;
+				printf("[%d] (%d) %s\n", (job->jid), (job->pid), (job->cmdline));
 		
 			}
 			
