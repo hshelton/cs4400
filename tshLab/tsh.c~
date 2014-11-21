@@ -210,8 +210,8 @@ void eval(char *cmdline)
 
         if(!(addjob(jobs, processID, bgfg, cmdline)))
         { 
-            unix_error("error adding job in eval");
-            
+            unix_error("eval: addjob error");
+            // TODO: Kill the spawned process?
         }
 
         /* Unblock SIGCHLD in the parent process */
@@ -373,7 +373,7 @@ void do_bgfg(char **argv)
 		}
 
 		//at this point we have a job to send SIGCONT to
-	       if(kill(-(job->pid), SIGCONT) < 0) unix_error("Kill error in bg_fg");
+	       if(kill(-(job->pid), SIGCONT) < 0) unix_error("do_bgfg: Kill error");
 			 // determine if they want a background or foreground job
 	                if(strcmp (argv[0] , "bg") ==0)
 			{
