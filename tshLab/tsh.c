@@ -166,76 +166,64 @@ int main(int argc, char **argv)
 */
 void eval(char *cmdline) 
 {
-	pid_t processID; //holder for this process id
-	sigset_t signalSet; //used to represent a set of signals, defined in signal.h
-	
-	char *arguments [MAXARGS]; /* this is a holder for arguments returned from parseLine */
-	int background, builtIn; /* this will be a 1 if the command ends in '&' */
-	
-	background = parseline(cmdline, arguments); /*use parseline to get the argument list */
-	
-	/* check for built in command, if found, execute immediately */
-	builtIn = builtin_cmd(arguments);
-	
-	
+    pid_t processID; //holder for this process id
+    sigset_t signalSet; //used to represent a set of signals, defined in signal.h
+    
+    char *arguments [MAXARGS]; /* this is a holder for arguments returned from parseLine */
+    int background, builtIn; /* this will be a 1 if the command ends in '&' */
+    
+    background = parseline(cmdline, arguments); /*use parseline to get the argument list */
+    
+    /* check for built in command, if found, execute immediately */
+    builtIn = builtin_cmd(arguments);
+        
+    //if it's not a built in command then we have more work to do
+    if(builtIn == 0)
+    {
+        /* Initialize an empty signal set */
+        if (sigemptyset(&signalSet))
+        {
+            unix_error("failed to initialize an empty signal set for this processs ");
+            return;
+        }
+            
+        sigaddset(&signalSet, SIGCHLD); /* Add the SIGCHILD signal to the signaleSet */
+        sigprocmask(SIG_BLOCK, &signalSet, NULL);
 
-	//if it's not a built in command then we have more work to do
-	if(builtIn == 0)
-	{
-		int ok = sigemptyset(&signalSet); //try to initialize an empty signal set
-		if(ok !=0) 
-		{
-		unix_error("failed to initialize an empty signal set for this processs ");
-		return;	
-		}
+        /* Fork the parent process and spawn a child process */
+        if (!(processID = fork()))
+        {
+            sigprocmask(SIG_UNBLOCK, &signalSet, NULL); /* Unblock SIGCHLD within the forked process */
 
-		//add SIGCHILD signal to the set
-		sigaddset(&signalSet, SIGCHLD);
-		sigprocmask(SIG_BLOCK, &signalSet, NULL); /* Block SIGCHILD */
-		
-		//fork a child process
-		if((processID = fork() ==0))
+            if(execvp(arguments[0], arguments) < 0)
+            {   /* if execvp fails print message and exit */
+                printf("%s: Command not found. (%d)\n", arguments[0], processID);
+                exit(0);
+                // TODO: return so that job doesn't get added to jobs list
+            }
+        }
 
-		{
-			sigprocmask(SIG_UNBLOCK, &signalSet, NULL); /*unblock SIGCHILD */
-				
-		
-			if(execvp(arguments[0], arguments) < 0)
-			{ 
-			printf("%s: Command not found. (%d)\n", arguments[0], processID);
-			exit(0);
-			}
-		 
-		}		
-		
+        /* Parent Process adds job to jobs list*/
+        int bgfg = (background == 1 ? BG : FG);
 
+        if(!(addjob(jobs, processID, bgfg, cmdline)))
+        { 
+            unix_error("eval: addjob error");
+            // TODO: Kill the spawned process?
+        }
 
+        /* Unblock SIGCHLD in the parent process */
+        sigprocmask(SIG_UNBLOCK, &signalSet, NULL);
 
-		//if an error occurs while adding the job, then maybe we should kill the process
-		// that we just started
-		if(background)
-		{
-			int added = addjob(jobs, processID, BG, arguments);
-			if(!added)
-				unix_error("eval: addjob error");
-			sigprocmask(SIG_UNBLOCK, &signalSet, NULL);
-		}
-
+        /* if this is a foreground process, wait until it finishes. */
+        if (!background)
+            waitfg(processID);
 		else
 		{
-			int added = addjob(jobs, processID, FG, arguments);
-			if(!added)
-				unix_error("eval: addjob error");
-			sigprocmask(SIG_UNBLOCK, &signalSet, NULL);
-			waitfg(processID);
-
+			printf("[%d] (%d) %s", pid2jid(processID), processID, cmdline);
 		}
-		
-		
-		
-		
-	}
-	
+    }
+    
     return;
 }
 
@@ -334,11 +322,11 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv) 
 {
-		if(!argv[1])
-		{
-			printf("%s command requires PID or %%jobid argument.\n", argv[0]);
-			return;
-		}
+       	if(!argv[1])
+	{
+	   printf("%s command requires PID or %%jobid argument.\n", argv[0]);
+	   return;
+	 }
 
 		struct job_t* job;
 		char * argv1 = argv[1];
@@ -393,7 +381,15 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
+	struct job_t * job;
+	job = getjobpid(jobs, pid);
+	if(!job)
+		return;
 
+	while(job -> state == FG && job -> pid )
+	{
+		sleep(1);
+	}
 
     return;
 }
@@ -411,6 +407,47 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
+  struct job_t *job; //holder for job
+  int status;
+  pid_t pid; //hold pid of job
+  int jid;
+  
+        
+  while ((pid = waitpid(-1, & status, WNOHANG | WUNTRACED))>0)
+    {
+      /* if process exited normally */
+      if(WIFEXITED(status))
+	{
+	  //get job id from the child process' pid
+	  jid = pid2jid(pid);
+	  deletejob(jobs,pid);
+	}
+
+      /* if process received stop signal */
+      else if(WIFSTOPPED(status))
+	{
+	  job = getjobpid(jobs,pid);
+	  if(!job)
+	    {
+	      printf("(%d): No such process. \n", pid);
+	      return;
+	    }
+	  job->state = ST;
+	  printf("[%d] Stopped %s\n", (job->jid), (job->cmdline));
+	}
+
+      /* if process terminated abnormally */
+      else if(WIFSIGNALED(status))
+	{
+	  jid = pid2jid(pid);
+	  deletejob(jobs, pid);
+	  int termReason = WTERMSIG(status);
+	  printf("Job [%d] (%d) terminated by signal %d\n", jid, pid,termReason);
+	}
+
+    }
+
+
     return;
 }
 
