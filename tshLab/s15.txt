@@ -5,25 +5,25 @@
 tsh> ./bogus
 ./bogus: Command not found
 tsh> ./myspin 10
-Job [1] (5999) terminated by signal 2
+Job [1] (25295) terminated by signal 2
 tsh> ./myspin 3 &
-[1] (6001) ./myspin 3 &
+[1] (25305) ./myspin 3 &
 tsh> ./myspin 4 &
-[2] (6003) ./myspin 4 &
+[2] (25307) ./myspin 4 &
 tsh> jobs
-[1] (6001) Running ./myspin 3 &
-[2] (6003) Running ./myspin 4 &
+[1] (25305) Running ./myspin 3 &
+[2] (25307) Running ./myspin 4 &
 tsh> fg %1
-Job [1] (6001) Stopped by signal 20
+Job [1] (25305) Stopped by signal 17
 tsh> jobs
-[1] (6001) Stopped ./myspin 3 &
-[2] (6003) Running ./myspin 4 &
+[1] (25305) Stopped ./myspin 3 &
+[2] (25307) Running ./myspin 4 &
 tsh> bg %3
 %3: No such job
 tsh> bg %1
-[1] (6001) ./myspin 3 &
+[1] (25305) ./myspin 3 &
 tsh> jobs
-[1] (6001) Running ./myspin 3 &
-[2] (6003) Running ./myspin 4 &
+[1] (25305) Running ./myspin 3 &
+[2] (25307) Running ./myspin 4 &
 tsh> fg %1
 tsh> quit

@@ -435,6 +435,7 @@ void sigchld_handler(int sig)
 	{
 	  //get job id from the child process' pid
 	  jid = pid2jid(pid);
+	  //delete the terminated job from the jobs list
 	  deletejob(jobs,pid);
 	}
 
@@ -448,9 +449,9 @@ void sigchld_handler(int sig)
 	      return;
 	    }
 	  job->state = ST;
-		int termReason = WTERMSIG(status);
+		
 		//TODO: why is termReason 17 instead of 20?
-	  printf("Job [%d] (%d) Stopped by signal %d\n", (job->jid), (job->pid), 20);				
+	  printf("Job [%d] (%d) stopped by signal %d\n", (job->jid), (job->pid), SIGTSTP);				
 
 
 	}
@@ -495,7 +496,7 @@ void sigtstp_handler(int sig)
 	pid_t processID;
 	if((processID = fgpid(jobs)) > 0)
 	{
-		if(kill(-processID, SIGSTOP) <0) unix_error("Error occured while handling SIGSTP");
+		if(kill(-processID, SIGTSTP) <0) unix_error("Error occured while handling SIGSTP");
 	}
     return;
 }
