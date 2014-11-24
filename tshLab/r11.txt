@@ -1,0 +1,20 @@
+./sdriver.pl -t trace11.txt -s ./tshref -a "-p"
+#
+# trace11.txt - Forward SIGINT to every process in foreground process group
+#
+tsh> ./mysplit 4
+Job [1] (5097) terminated by signal 2
+tsh> /bin/ps a
+  PID TTY      STAT   TIME COMMAND
+ 1568 pts/0    Ss     0:00 -csh
+ 3491 tty8     Ss+    1:38 /usr/bin/Xorg :1 -br -verbose -audit 4 -auth /var/run/gdm/auth-for-gdm-aUw3sA/database -nolisten tcp
+ 3665 tty2     Ss+    0:00 /sbin/mingetty /dev/tty2
+ 3667 tty3     Ss+    0:00 /sbin/mingetty /dev/tty3
+ 3669 tty4     Ss+    0:00 /sbin/mingetty /dev/tty4
+ 3671 tty5     Ss+    0:00 /sbin/mingetty /dev/tty5
+ 3673 tty6     Ss+    0:00 /sbin/mingetty /dev/tty6
+ 5093 pts/0    S+     0:00 make rtest11
+ 5094 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t trace11.txt -s ./tshref -a -p
+ 5095 pts/0    S+     0:00 ./tshref -p
+ 5100 pts/0    R      0:00 /bin/ps a
+20695 tty7     Ss+    1:12 /usr/bin/Xorg :0 -br -verbose -audit 4 -auth /var/run/gdm/auth-for-gdm-ytSvzs/database -nolisten tcp
