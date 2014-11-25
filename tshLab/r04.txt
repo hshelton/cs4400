@@ -1,5 +1,6 @@
-./sdriver.pl -t trace03.txt -s ./tshref -a "-p"
+./sdriver.pl -t trace04.txt -s ./tshref -a "-p"
 #
-# trace03.txt - Run a foreground job.
+# trace04.txt - Run a background job.
 #
-tsh> quit
+tsh> ./myspin 1 &
+[1] (1042) ./myspin 1 &

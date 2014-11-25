@@ -3,22 +3,60 @@
 # trace12.txt - Forward SIGTSTP to every process in foreground process group
 #
 tsh> ./mysplit 4
-Job [1] (5148) Stopped by signal 20
+Job [1] (1173) stopped by signal 20
 tsh> jobs
-[1] (5148) Stopped ./mysplit 4 
+[1] (1173) Stopped ./mysplit 4 
 tsh> /bin/ps a
   PID TTY      STAT   TIME COMMAND
- 1568 pts/0    Ss     0:00 -csh
- 3491 tty8     Ss+    1:38 /usr/bin/Xorg :1 -br -verbose -audit 4 -auth /var/run/gdm/auth-for-gdm-aUw3sA/database -nolisten tcp
- 3665 tty2     Ss+    0:00 /sbin/mingetty /dev/tty2
- 3667 tty3     Ss+    0:00 /sbin/mingetty /dev/tty3
- 3669 tty4     Ss+    0:00 /sbin/mingetty /dev/tty4
- 3671 tty5     Ss+    0:00 /sbin/mingetty /dev/tty5
- 3673 tty6     Ss+    0:00 /sbin/mingetty /dev/tty6
- 5144 pts/0    S+     0:00 make test12
- 5145 pts/0    S+     0:00 /usr/bin/perl ./sdriver.pl -t trace12.txt -s ./tsh -a -p
- 5146 pts/0    S+     0:00 ./tsh -p
- 5148 pts/0    T      0:00 ./mysplit 4
- 5149 pts/0    T      0:00 ./mysplit 4
- 5152 pts/0    R      0:00 /bin/ps a
-20695 tty7     Ss+    1:16 /usr/bin/Xorg :0 -br -verbose -audit 4 -auth /var/run/gdm/auth-for-gdm-ytSvzs/database -nolisten tcp
+  515 pts/23   T      0:00 git pull origin master
+  516 pts/23   T      0:00 git-merge Merge branch 'master' of https://github.com/hshelton/cs4400 HEAD 5098d17e576f255e16c36914b117a23cd70617ad
+  553 pts/23   T      0:00 vi .git/MERGE_MSG
+  555 pts/23   T      0:00 git pull origin master
+  556 pts/23   Z      0:00 [git-merge] <defunct>
+  598 pts/23   T      0:00 vi .git/MERGE_MSG
+ 1035 pts/1    S+     0:00 sh -c meep design.ctl >& design.out
+ 1036 pts/1    R+     5:43 meep design.ctl
+ 1169 pts/23   S+     0:00 make test12
+ 1170 pts/23   S+     0:00 /usr/bin/perl ./sdriver.pl -t trace12.txt -s ./tsh -a -p
+ 1171 pts/23   S+     0:00 ./tsh -p
+ 1173 pts/23   T      0:00 ./mysplit 4
+ 1174 pts/23   T      0:00 ./mysplit 4
+ 1177 pts/23   R      0:00 /bin/ps a
+ 1543 pts/5    Ss     0:00 -csh
+ 1646 pts/5    S+     0:00 /bin/tcsh /uusoc/facility/cad_common/local/bin/F13/cad-ncsu
+ 1662 pts/5    Sl+   30:00 /uusoc/facility/cad_tools/Cadence/IC6-F13/tools/dfII/bin/64bit/virtuoso
+ 1758 pts/5    S      0:01 /uusoc/facility/cad_tools/Cadence/IC6-F13/tools/bin/32bit/cdsServIpc -c 33808 -n 1 -r 10 -x /uusoc/facility/cad_tools/Cadence/IC6-F13/tools/dfII/bin/libManager   -mpssession virtuoso1662 -mpshost lab1-10 
+ 1774 pts/5    S      1:01 /uusoc/facility/cad_tools/Cadence/IC6-F13/tools/dfII/bin/64bit/libManager -mpssession virtuoso1662 -mpshost lab1-10
+ 3144 pts/6    Ss+    0:00 ssh -2 -x -l jjacobse 127.0.0.1 -o NumberOfPasswordPrompts 1 -p 22 /usr/libexec/nx/nxnode --slave
+ 3594 tty2     Ss+    0:00 /sbin/mingetty /dev/tty2
+ 3596 tty3     Ss+    0:00 /sbin/mingetty /dev/tty3
+ 3598 tty4     Ss+    0:00 /sbin/mingetty /dev/tty4
+ 3600 tty5     Ss+    0:00 /sbin/mingetty /dev/tty5
+ 3602 tty6     Ss+    0:00 /sbin/mingetty /dev/tty6
+ 4511 pts/1    Ss     0:00 -bin/tcsh
+ 4544 pts/1    S+     1:55 /home/bings/progs/octave/bin/octave-cli-3.8.0
+ 4666 pts/7    Ss+    0:00 -csh
+13510 pts/12   Ss+    0:00 -tcsh
+13994 pts/13   Ss+    0:00 ssh -2 -x -l jamshidy 127.0.0.1 -o NumberOfPasswordPrompts 1 -p 22 /usr/libexec/nx/nxnode --slave
+15182 pts/15   Ssl+   2:17 /usr/local/apps/matlab/matlab14a/bin/glnxa64/MATLAB
+15661 pts/16   Ss+    0:00 ssh -2 -x -l jamshidy 127.0.0.1 -o NumberOfPasswordPrompts 1 -p 22 /usr/libexec/nx/nxnode --slave
+17325 pts/18   Ss+    0:00 ssh -2 -x -l jamshidy 127.0.0.1 -o NumberOfPasswordPrompts 1 -p 22 /usr/libexec/nx/nxnode --slave
+18651 pts/20   Ssl+  10:47 /usr/local/apps/matlab/matlab14a/bin/glnxa64/MATLAB
+18957 pts/20   S+     0:02 /usr/local/apps/matlab/matlab14a/toolbox/symbolic/mupad/glnxa64/bin/mupkern -l /usr/local/apps/matlab/matlab14a/toolbox/symbolic/mupad/share/lib -X /tmp/mupkrZybtZ5
+19350 pts/0    Ss+    0:00 ssh -2 -x -l takur 127.0.0.1 -o NumberOfPasswordPrompts 1 -p 22 /usr/libexec/nx/nxnode --slave
+20440 pts/8    Ss+    0:00 -tcsh
+23054 pts/21   Ss+    0:00 ssh -2 -x -l takur 127.0.0.1 -o NumberOfPasswordPrompts 1 -p 22 /usr/libexec/nx/nxnode --slave
+23624 pts/2    Ss+    0:00 ssh -2 -x -l matthewd 127.0.0.1 -o NumberOfPasswordPrompts 1 -p 22 /usr/libexec/nx/nxnode --slave
+24490 pts/22   Ss     0:00 -csh
+24985 pts/3    Ss+    0:00 -csh
+26856 tty7     Ss+    0:01 /usr/bin/Xorg :0 -br -verbose -audit 4 -auth /var/run/gdm/auth-for-gdm-BNuMxT/database -nolisten tcp
+27191 pts/22   S+     0:00 /bin/tcsh /uusoc/facility/cad_common/local/bin/F13/sim-msim
+27206 pts/22   S+     5:21 /uusoc/facility/cad_tools/Mentor/MSIM-S13/bin/../linux/vish -- -vsim -l msim.log
+27222 pts/22   S      0:00 /uusoc/facility/cad_tools/Mentor/modelsim10.1c/modeltech/linux/vlm -1160515457 -1400585623
+27223 pts/22   S      0:00 /uusoc/facility/cad_tools/Mentor/modelsim10.1c/modeltech/linux/mgls/lib/mgls_asynch  -f4,8 -s 1,180; 2,180; 3,20; 4,1; 5,1; 7,10; 8,/uusoc/facility/cad_tools/Mentor/common_license; 10,/uusoc/facility/cad_tools/Mentor/modelsim10.1c/modeltech/linux/mgls; 11,/uusoc/facility/cad_tools/Mentor/modelsim10.1c/modeltech/linux/mgls/lib/mgc.pkginfo; 12,15; 13,0; 14,ANY; 15,0; 16,0; 21,8.0; 22,1; 23,0; 24,0; 25,0; 36,/uusoc/facility/cad_tools/Mentor/modelsim10.1c/modeltech/linux/mgls/lib/mgc.pkginfo; 32,/uusoc/facility/cad_tools/Mentor/common_license; 34,; 31,0;
+27234 pts/22   Sl+    2:13 /uusoc/facility/cad_tools/Mentor/modelsim10.1c/modeltech/linux/vsimk -port 44651 -stdoutfilename /tmp/VSOUT72c8BR -l msim.log
+29524 pts/9    Ss+    0:00 ssh -2 -x -l takur 127.0.0.1 -o NumberOfPasswordPrompts 1 -p 22 /usr/libexec/nx/nxnode --slave
+30835 pts/10   Ss+    0:00 -csh
+32363 pts/11   Ss+    0:00 -tcsh
+32638 pts/23   Ss     0:00 -tcsh
+32652 pts/4    Ss+    0:00 ssh -2 -x -l matthewd 127.0.0.1 -o NumberOfPasswordPrompts 1 -p 22 /usr/libexec/nx/nxnode --slave
