@@ -44,10 +44,27 @@ team_t team = {
 
 #define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
 
+#define MAXSIZE 536870912
+
+size_t heapStart;
+size_t heapEnd;
+
+
 /*
  * mm_init - initialize the malloc package.
  */
 int mm_init(void)
+{
+
+
+    return 0;
+}
+
+
+/*
+ * Original mm_init
+ */
+int mm_init_original(void)
 {
 
     return 0;
@@ -56,17 +73,29 @@ int mm_init(void)
 /*
  * mm_malloc - Allocate a block by incrementing the brk pointer.
  *     Always allocate a block whose size is a multiple of the alignment.
+ *
+ *
  */
 void *mm_malloc(size_t size)
 {
-    int newsize = ALIGN(size + SIZE_T_SIZE);
-    void *p = mem_sbrk(newsize);
-    if (p == (void *)-1)
+    /* using block format of lecture slide */
+
+}
+/*
+* Original mm_malloc
+* note: size_t is basically just an unsigned integer
+ */
+void *mm_malloc_original(size_t size)
+{
+    int newsize = ALIGN(size + SIZE_T_SIZE); /* calculate size needed to allocate. round size to nearest 8, and add 8 - why the extra padding?*/
+    void *p = mem_sbrk(newsize);  /*grow the heap by needed size */
+    if (p == (void *)-1) /*if an error occured while growing the heap, return a null pointer */
 	return NULL;
 
     else {
-        *(size_t *)p = size;
-        return (void *)((char *)p + SIZE_T_SIZE);
+        *(size_t *)p = size; /*cast p to unsigned and set it to top of heap */
+        return (void *)((char *)p + SIZE_T_SIZE); /*the heap is now grown by ALIGN(size) + 8 . Return a pointer to the top of the
+        * heap + 8, presumably, the padding is to avoid overwiting data */
     }
 }
 
@@ -74,6 +103,14 @@ void *mm_malloc(size_t size)
  * mm_free - Freeing a block does nothing.
  */
 void mm_free(void *ptr)
+{
+
+}
+
+/*
+ * Original mm_free.
+ */
+void mm_free_original(void *ptr)
 {
 
 }
@@ -98,6 +135,43 @@ void *mm_realloc(void *ptr, size_t size)
     return newptr;
 }
 
+/*
+ * original mm_realloc
+ */
+void *mm_realloc_original(void *ptr, size_t size)
+{
+    void *oldptr = ptr;
+    void *newptr;
+    size_t copySize;
+
+    newptr = mm_malloc(size);
+    if (newptr == NULL)
+      return NULL;
+    copySize = *(size_t *)((char *)oldptr - SIZE_T_SIZE);
+    if (size < copySize)
+      copySize = size;
+    memcpy(newptr, oldptr, copySize);
+    mm_free(oldptr);
+    return newptr;
+}
+
+/*
+* Heap Consistency Checker - might chck things such as:
+* Is every block in the free list marked as free?
+* Are there any contiguous blocks that somehow escaped coalescing?
+* Is every free block actually in the free list?
+* Do the pointers in the free list point to valid free blocks?
+* Do any allocated blocks overlap?
+* Do the pointers in a heap block point to valid heap addresses?
+*/
+int mm_check(void)
+{
+
+
+
+
+
+}
 
 
 
