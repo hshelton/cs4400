@@ -41,26 +41,13 @@ team_t team = {
 /* rounds up to the nearest multiple of ALIGNMENT */
 #define ALIGN(size) (((size) + (ALIGNMENT-1)) & ~0x7)
 
-/* size t rounded up to the nearest multiple of alignment */
+
 #define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
 
-/* based on the example, the maximum block size would be 2^29 */
 #define MAXSIZE 536870912
-
-/* pull block size from header */
-#define BLOCKSIZE(header) (header & 0xFFFFFFF8)
-
-/* 0 if free, 1 if allocated */
-#define ALLOCATED(header) (header & 0x00000001)
-
-/* address of the start of the next memory slot */
-#define STEP(header) (header + ALIGN(BLOCKSIZE(header)))
-
-#define WRITE(addr, val) (*addrr = val )
 
 size_t heapStart;
 size_t heapEnd;
-int slotsAllocated;
 
 
 /*
@@ -70,7 +57,6 @@ int mm_init(void)
 {
     void* p = mem_heap_lo();
     heapStart = (size_t) p;
-    heapEnd = heapStart;
     return 0;
 }
 
@@ -84,7 +70,17 @@ int mm_init_original(void)
     return 0;
 }
 
+/*
+ * mm_malloc - Allocate a block by incrementing the brk pointer.
+ *     Always allocate a block whose size is a multiple of the alignment.
+ *
+ *
+ */
+void *mm_malloc(size_t size)
+{
+    /* using block format of lecture slide */
 
+}
 /*
 * Original mm_malloc
 * note: size_t is basically just an unsigned integer
@@ -102,61 +98,7 @@ void *mm_malloc_original(size_t size)
         * heap + 8, presumably, the padding is to avoid overwiting data */
     }
 }
-/*
- * mm_malloc - Allocate a block by incrementing the brk pointer.
- *     Always allocate a block whose size is a multiple of the alignment.
- *
- *
- */
-void *mm_malloc(size_t size)
-{
-    /* using block format of lecture slide */
-        if(!slotsAllocated)
-        {
-            /* then there is no chance of a freed slot */
-            /* grow heap and assign a new chunk of memory */
 
-
-        }
-        else
-        {
-            /* check for a free slot here? */
-
-            /* begin traversing the list */
-            size_t currentHeader = heapStart;
-            while(currentHeader < heapEnd)
-            {
-                currentHeader = STEP(currentHeader);
-                if(!ALLOCATED(currentHeader))
-                {
-                    if(BLOCKSIZE(currentHeader)>= size)
-                    {
-                        /* we can reuse this */
-
-                        /* mark this chunk as used */
-
-                        /* the pointer we return would be the first byte of currenter + sizeof(int) */
-
-                        break;
-
-                    }
-                }
-
-
-            }
-
-        }
-
-
-
-
-
-    /*be sure to update heapEnd upon calling sbrk */
-
-     return mm_malloc_original(size);
-
-
-}
 /*
  * mm_free - Freeing a block does nothing.
  */
@@ -224,8 +166,8 @@ void *mm_realloc_original(void *ptr, size_t size)
 */
 int mm_check(void)
 {
-  /* do any allocated blocks overlap ? */
-  /* beginning at start of heap, */
+
+
 
 
 

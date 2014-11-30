@@ -28,8 +28,6 @@ handin:
 clean:
 	rm -f *~ *.o mdriver
 
-Debug: mdriver
-
-cleanDebug: clean
+Debug: make
 
 

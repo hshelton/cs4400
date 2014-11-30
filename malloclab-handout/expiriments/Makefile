@@ -30,6 +30,4 @@ clean:
 
 Debug: mdriver
 
-cleanDebug: clean
-
 
