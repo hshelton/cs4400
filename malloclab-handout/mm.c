@@ -59,10 +59,21 @@ team_t team = {
 #define HDRP(bp) ((char*)(bp) - WSIZE)
 #define FTRP(bp) ((char*)(bp) + GET_SIZE(HDRP(bp)) - DSIZE)
 
+/* Given a free block ptr bp, compute address of its pred pointer */
+#define PDRP(bp) (HDRP(bp)+4)
+
+/* Given a free block ptr bp, compute address its successor */
+#define SCRP(bp) (HDRP(bp)+8)
+
+
+
 /* Given block ptr bp, compute address of next and previous blocks */
 #define NEXT_BLKP(bp) ((char*)(bp) + GET_SIZE(((char*)(bp) - WSIZE)))
 #define PREV_BLKP(bp) ((char*)(bp) - GET_SIZE(((char*)(bp) - DSIZE)))
 
+/* the first free block in the list */
+static size_t freeHead;
+static size_t freeTail;
 
 
 static char* heap_listp ;
@@ -85,9 +96,17 @@ int mm_init(void) {
  PUT(heap_listp+WSIZE+DSIZE, PACK(0, 1)); /* epilogue header */
  heap_listp += DSIZE; /* move heap_listp past prologue's header */
 
+ void* heapStart;
  /* extend the empty heap with a free block of CHUNKSIZE bytes */
- if (extend_heap(CHUNKSIZE/WSIZE) == NULL)
+ if (heapStart = extend_heap(CHUNKSIZE/WSIZE) == NULL)
     return -1;
+
+    /* set predecessor and successor to null */
+    size_t successor = SCRP(heapStart);
+    PUT(successor, NULL);
+
+    size_t predecessor = PDRP(heapStart);
+    PUT(predecessor, NULL);
 
 
  return 0;
@@ -98,6 +117,7 @@ void mm_free(void* bp) {
  size_t size = GET_SIZE(HDRP(bp));
  PUT(HDRP(bp), PACK(size, 0));
  PUT(FTRP(bp), PACK(size, 0));
+
  coalesce(bp);
 }
 
@@ -106,27 +126,43 @@ static void* coalesce(void* bp) {
  size_t next_alloc = GET_ALLOC(HDRP(NEXT_BLKP(bp)));
 
  size_t size = GET_SIZE(HDRP(bp));
- if (prev_alloc && next_alloc) { return bp; }
+
+    /* if previous and next are allocated do nothing */
+    if (prev_alloc && next_alloc)
+
+    {
+    return bp;
+    }
 
 
+/* if next is not allocated */
  else if (prev_alloc && !next_alloc) {
- size += GET_SIZE(HDRP(NEXT_BLKP(bp)));
- PUT(HDRP(bp), PACK(size, 0));
- PUT(FTRP(bp), PACK(size ,0));
- return(bp);
+    size += GET_SIZE(HDRP(NEXT_BLKP(bp)));
+    PUT(HDRP(bp), PACK(size, 0));
+    PUT(FTRP(bp), PACK(size ,0));
+    /* this node's successor is the next node's */
+    size_t oldSucc = SCRP(NEXT_BLKP(bp));
+    PUT(SCRP(bp), oldSucc);
+
+    return(bp);
  }
+
  else if (!prev_alloc && next_alloc) {
- size += GET_SIZE(HDRP(PREV_BLKP(bp)));
- PUT(FTRP(bp), PACK(size, 0));
- PUT(HDRP(PREV_BLKP(bp)), PACK(size, 0));
- return(PREV_BLKP(bp));
+    size += GET_SIZE(HDRP(PREV_BLKP(bp)));
+    PUT(FTRP(bp), PACK(size, 0));
+    PUT(HDRP(PREV_BLKP(bp)), PACK(size, 0));
+
+    size_t oldSucc = SCRP(PREV_BLKP(bp));
+    PUT(SCRP(PREV_BLKP(bp)), oldSucc);
+
+    return(PREV_BLKP(bp));
  }
  else {
- size += GET_SIZE(HDRP(PREV_BLKP(bp))) +
- GET_SIZE(FTRP(NEXT_BLKP(bp)));
- PUT(HDRP(PREV_BLKP(bp)), PACK(size, 0));
- PUT(FTRP(NEXT_BLKP(bp)), PACK(size, 0));
- return(PREV_BLKP(bp));
+    size += GET_SIZE(HDRP(PREV_BLKP(bp))) +
+    GET_SIZE(FTRP(NEXT_BLKP(bp)));
+    PUT(HDRP(PREV_BLKP(bp)), PACK(size, 0));
+    PUT(FTRP(NEXT_BLKP(bp)), PACK(size, 0));
+    return(PREV_BLKP(bp));
  }
 }
 
@@ -160,11 +196,12 @@ void* mm_malloc(size_t size) {
 
 static void* find_fit(size_t asize) {
  void* bp;
+
  /* first fit search */
  for(bp = heap_listp; GET_SIZE(HDRP(bp)) > 0; bp = NEXT_BLKP(bp)) {
- if(!GET_ALLOC(HDRP(bp)) && (asize <= GET_SIZE(HDRP(bp)))) {
- return bp;
- }
+    if(!GET_ALLOC(HDRP(bp)) && (asize <= GET_SIZE(HDRP(bp)))) {
+    return bp;
+    }
  }
  return NULL; /* no fit */
 }
@@ -193,7 +230,6 @@ void* mm_realloc(void *ptr, size_t size)
     if (size == 0)
     {
     mm_free(ptr);
-
     return mm_malloc(size);
     }
 
