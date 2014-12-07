@@ -7,7 +7,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
-
+#include "csapp.h"
+int counter = 1;
 void doit()
 {
     fork();
@@ -28,6 +29,7 @@ void doit2()
     return;
 
 }
+
 int main()
 {
     /*printf("8.12 \n");
@@ -36,11 +38,24 @@ int main()
     printf("\n");
     exit(0);
     */
-
+/*
     printf("8.14 \n");
     doit2();
     printf("hello \n");
 
+*/
 
+    if(fork()==0)
+    {
+        counter--;
+        exit(0);
+
+
+    }
+    else
+    {
+    wait(NULL);
+    printf("counter = %d\n", ++counter);
+    }
     exit(0);
 }
